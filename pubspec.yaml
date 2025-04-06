@@ -1,0 +1,62 @@
+name: flutter_starter_kit
+description: A Flutter starter kit with essential components and helpers for quick project setup.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  provider: ^6.0.5
+  get: ^4.6.5
+  shared_preferences: ^2.1.0
+  connectivity_plus: ^3.0.3
+  shimmer: ^2.0.0
+  quickalert: ^1.0.1
+  google_fonts: ^4.0.3
+  http: ^0.13.5
+  intl: ^0.18.0
+  cached_network_image: ^3.2.3
+  image_picker: ^0.8.7+4
+  flutter_svg: ^2.0.5
+  lottie: ^2.3.2
+  path_provider: ^2.0.14
+  url_launcher: ^6.1.10
+  package_info_plus: ^8.3.0
+  device_info_plus: 
+  sizer: ^2.0.15
+  change_app_package_name: ^1.5.0
+  flutter_screenutil: ^5.9.3
+  table_calendar: ^3.0.9
+  google_maps_flutter: ^2.12.1
+  geolocator: ^13.0.4
+  geocoding: ^3.0.0
+  flutter_typeahead: ^5.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/images/onboarding/
+    - assets/images/icons/
+    - assets/images/placeholders/
+    - assets/translations/
+    
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
