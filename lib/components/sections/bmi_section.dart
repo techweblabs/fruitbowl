@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/screens/ProfielScreen/user_profile_page.dart';
+import 'package:flutter_starter_kit/utils/helpers/twl.dart';
+import 'package:sizer/sizer.dart';
 
 class BMISection extends StatelessWidget {
   const BMISection({Key? key}) : super(key: key);
@@ -98,7 +101,7 @@ class BMISection extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 15),
 
                     // Calculate button
                     _buildCalculateButton(),
@@ -157,33 +160,40 @@ class BMISection extends StatelessWidget {
         ..setEntry(3, 2, 0.0005)
         ..rotateX(0.005),
       alignment: Alignment.center,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 10,
-        ),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF7AFCFF), Color(0xFF56D0D5)],
+      child: GestureDetector(
+        onTap: () {
+          Twl.navigateToScreen(UserProfilePage());
+
+          // Handle profile
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 2.h,
+            vertical: 1.w,
           ),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.black, width: 2),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(4, 4),
-              blurRadius: 0,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF7AFCFF), Color(0xFF56D0D5)],
             ),
-          ],
-        ),
-        child: const Text(
-          'Calculate Now',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.black, width: 2),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black,
+                offset: Offset(4, 4),
+                blurRadius: 0,
+              ),
+            ],
+          ),
+          child: Text(
+            'Calculate Now',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 9.sp,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),

@@ -32,16 +32,16 @@ class Twl {
   static double get screenHeight => screenSize.height;
 
   /// Connectivity service instance
-  static final ConnectivityService _connectivityService = ConnectivityService();
+ // static final ConnectivityService _connectivityService = ConnectivityService();
 
   /// Stream of connectivity changes
-  static Stream<bool> get connectivityStream =>
-      _connectivityService.connectionChange;
+  // static Stream<bool> get connectivityStream =>
+  //     _connectivityService.connectionChange;
 
-  /// Check connectivity status
-  static Future<bool> checkConnectivity() async {
-    return await _connectivityService.isConnected();
-  }
+  // /// Check connectivity status
+  // static Future<bool> checkConnectivity() async {
+  //   return await _connectivityService.isConnected();
+  // }
 
   static void navigateToScreenAnimated(Widget page, {BuildContext? context}) {
     if (context == null) return;

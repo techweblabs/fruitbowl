@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'location_widget.dart';
+import 'package:flutter_starter_kit/screens/ProfielScreen/user_profile_page.dart';
 
 class CustomAppBar extends StatelessWidget {
   final String username;
@@ -26,6 +28,8 @@ class CustomAppBar extends StatelessWidget {
             _buildIconContainer(
               icon: Icons.person,
               onTap: () {
+                Twl.navigateToScreen(UserProfilePage());
+
                 // Handle profile
               },
             ),

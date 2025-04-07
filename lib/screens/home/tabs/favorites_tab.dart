@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/utils/brutal_decoration.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
@@ -14,12 +15,18 @@ class FavoritesTab extends StatelessWidget {
       ),
       body: ListView.builder(
         padding: EdgeInsets.all(4.w),
-        itemCount: 10,
-        itemBuilder: (context, index) => _buildFavoriteItem(context, index),
+        itemCount: 11, // 10 items + 1 extra widget (for spacing)
+        itemBuilder: (context, index) {
+          if (index == 10) {
+            // Last item: just a spacer
+            return SizedBox(height: 10.h); // adjust height as needed
+          }
+          return _buildFavoriteItem(context, index);
+        },
       ),
     );
   }
-  
+
   Widget _buildFavoriteItem(BuildContext context, int index) {
     return Dismissible(
       key: Key('favorite_$index'),
@@ -40,21 +47,83 @@ class FavoritesTab extends StatelessWidget {
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {},
       confirmDismiss: (direction) async {
-        return await showDialog(
+        return await showDialog<bool>(
           context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Remove Favorite'),
-            content: Text('Are you sure you want to remove this item from favorites?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text('Cancel'),
+          builder: (context) => Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding:
+                const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            child: Container(
+              decoration: BrutalDecoration.brutalBox(),
+              padding: const EdgeInsets.all(20),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Remove Favorite',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Are you sure you want to remove this item from favorites?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        // Cancel Button
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).pop(false),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              decoration: BrutalDecoration.brutalBox(
+                                color: const Color(0xFFD0D0D0),
+                              ),
+                              alignment: Alignment.center,
+                              child: const Text(
+                                'Cancel',
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        // Remove Button
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).pop(true),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              decoration: BrutalDecoration.brutalBox(
+                                color: const Color(0xFFFF5C5C),
+                              ),
+                              alignment: Alignment.center,
+                              child: const Text(
+                                'Remove',
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Remove'),
-              ),
-            ],
+            ),
           ),
         );
       },

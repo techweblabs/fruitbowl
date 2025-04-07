@@ -1,5 +1,7 @@
 // lib/orders/orders_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/screens/home/home_screen.dart';
+import 'package:flutter_starter_kit/screens/home/tabs/home_tab.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 
@@ -114,7 +116,9 @@ class _OrdersPageState extends State<OrdersPage> {
         backgroundColor: Colors.grey[100],
         elevation: 0,
         leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
+          onTap: () {
+            Twl.navigateToScreenClearStack(const HomeTab(username: 'Srinadh'));
+          },
           child: Container(
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(

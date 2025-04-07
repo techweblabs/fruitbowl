@@ -59,12 +59,12 @@ class _DeliveryDaysState extends State<DeliveryDays> {
             Icons.calendar_today,
           ),
           const SizedBox(height: 12),
-          _buildDeliveryOption(
-            'custom',
-            'Custom',
-            'Pick your own days',
-            Icons.tune,
-          ),
+          // _buildDeliveryOption(
+          //   'custom',
+          //   'Custom',
+          //   'Pick your own days',
+          //   Icons.tune,
+          // ),
 
           // Custom day selector (only visible if custom is selected)
           if (_deliveryOption == 'custom') _buildCustomDaySelector(),

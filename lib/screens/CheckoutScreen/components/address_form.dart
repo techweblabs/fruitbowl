@@ -1,5 +1,10 @@
 // lib/checkout/components/address_form.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/screens/AddressScreen/components/add_address_page.dart';
+import 'package:flutter_starter_kit/screens/ProfielScreen/components/address_card.dart';
+import 'package:flutter_starter_kit/screens/ProfielScreen/models/user_profile.dart';
+import 'package:flutter_starter_kit/utils/helpers/twl.dart';
+import 'package:sizer/sizer.dart';
 import '../../../utils/brutal_decoration.dart';
 
 import 'section_title.dart';
@@ -12,6 +17,45 @@ class AddressForm extends StatefulWidget {
 }
 
 class _AddressFormState extends State<AddressForm> {
+  final UserProfile _user = UserProfile(
+    name: "Rahul Sharma",
+    email: "rahul.sharma@example.com",
+    phoneNumber: "+91 98765 43210",
+    profileImage: "assets/images/profile.png",
+    gender: "Male", // Added gender field
+    age: 32, // Added age field
+    bmi: 28.4,
+    weight: 86.2,
+    height: 174,
+    addresses: [
+      UserAddress(
+        id: 1,
+        type: "Home",
+        line1: "123, Greenwood Apartments",
+        line2: "Sector 22",
+        city: "Gurgaon",
+        state: "Haryana",
+        pinCode: "122015",
+        isDefault: true,
+      ),
+      UserAddress(
+        id: 2,
+        type: "Office",
+        line1: "Block B, Cyber City",
+        line2: "DLF Phase 3",
+        city: "Gurgaon",
+        state: "Haryana",
+        pinCode: "122002",
+        isDefault: false,
+      ),
+    ],
+    dietaryPreferences: ["Low Carb", "High Protein", "No Nuts"],
+    allergies: ["Peanuts", "Shellfish"],
+    goalType: "Weight Loss",
+    targetWeight: 75.0,
+    weeklyGoal: 0.5, // kg per week
+    activityLevel: "Moderate",
+  );
   // Form controllers
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
@@ -42,12 +86,47 @@ class _AddressFormState extends State<AddressForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SectionTitle(title: "Delivery Address"),
-          const SizedBox(height: 16),
-          _buildAddressForm(),
-          const SizedBox(height: 24),
-          _buildSaveAddressOption(),
-          const SizedBox(height: 24),
-          _buildSpecialInstructions(),
+          SizedBox(
+            height: 3.h,
+          ),
+          // const SizedBox(height: 16),
+          // _buildAddressForm(),
+          // const SizedBox(height: 24),
+          // _buildSaveAddressOption(),
+          // const SizedBox(height: 24),
+          // _buildSpecialInstructions(),
+          ..._user.addresses.map((address) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: AddressCard(
+                  address: address,
+                  onEdit: () {
+                    // Edit address
+                  },
+                  onDelete: () {
+                    // Delete address
+                  },
+                  onSetDefault: () {
+                    // Set as default
+                  },
+                ),
+              )),
+          GestureDetector(
+            onTap: () {
+              Twl.navigateToScreenAnimated(AddAddressPage(), context: context);
+              // AddAddressPage
+            },
+            child: Container(
+              padding: const EdgeInsets.all(4),
+                decoration: BrutalDecoration.sectionTitle(),
+              child: Text(
+                'Add New Address',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

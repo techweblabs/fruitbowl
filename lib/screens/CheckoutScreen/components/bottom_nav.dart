@@ -1,6 +1,7 @@
 // lib/checkout/components/bottom_nav.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_starter_kit/screens/MyOrdersScreen/my_orders_screen.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../utils/brutal_decoration.dart';
 
@@ -116,7 +117,10 @@ class BottomNav extends StatelessWidget {
             children: [
               Icon(Icons.check_circle, color: Colors.green[600]),
               const SizedBox(width: 8),
-              const Text('Payment Successful'),
+              Text(
+                'Payment Successful',
+                style: TextStyle(fontSize: 10.sp),
+              ),
             ],
           ),
           content: Column(

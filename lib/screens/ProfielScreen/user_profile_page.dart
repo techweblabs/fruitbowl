@@ -6,6 +6,7 @@ import 'package:flutter_starter_kit/screens/AddressScreen/components/add_address
 import 'package:flutter_starter_kit/screens/MyOrdersScreen/my_orders_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../utils/brutal_decoration.dart';
 import 'components/profile_header.dart';
@@ -155,14 +156,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 },
               ),
               const Divider(height: 1, thickness: 1),
-              ProfileOption(
-                icon: Icons.medical_services,
-                title: "Health Goals",
-                subtitle: "Track your progress",
-                onTap: () {
-                  // Navigate to health goals
-                },
-              ),
+              // ProfileOption(
+              //   icon: Icons.medical_services,
+              //   title: "Health Goals",
+              //   subtitle: "Track your progress",
+              //   onTap: () {
+              //     // Navigate to health goals
+              //   },
+              // ),
               const Divider(height: 1, thickness: 1),
               ProfileOption(
                 icon: Icons.favorite,
@@ -173,14 +174,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 },
               ),
               const Divider(height: 1, thickness: 1),
-              ProfileOption(
-                icon: Icons.payment,
-                title: "Payment Methods",
-                subtitle: "Manage your payment options",
-                onTap: () {
-                  // Navigate to payment methods
-                },
-              ),
+              // ProfileOption(
+              //   icon: Icons.payment,
+              //   title: "Payment Methods",
+              //   subtitle: "Manage your payment options",
+              //   onTap: () {
+              //     // Navigate to payment methods
+              //   },
+              // ),
             ],
           ),
         ),
@@ -382,14 +383,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 },
               ),
               const Divider(height: 1, thickness: 1),
-              ProfileOption(
-                icon: Icons.security,
-                title: "Privacy & Security",
-                subtitle: "Manage your account security",
-                onTap: () {
-                  // Navigate to privacy settings
-                },
-              ),
+              // ProfileOption(
+              //   icon: Icons.security,
+              //   title: "Privacy & Security",
+              //   subtitle: "Manage your account security",
+              //   onTap: () {
+              //     // Navigate to privacy settings
+              //   },
+              // ),
               const Divider(height: 1, thickness: 1),
               ProfileOption(
                 icon: Icons.help,
@@ -449,38 +450,94 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ),
           ),
         ),
+        SizedBox(
+          height: 10.h,
+        )
       ],
     );
   }
 
+  // 2) Use showDialog with a transparent Dialog + your Container:
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: Colors.black, width: 2),
-        ),
-        title: const Text('Logout'),
-        content: const Text(
-          'Are you sure you want to logout?',
-        ),
-        actions: [
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () => Navigator.pop(context),
+      barrierDismissible: true,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+        child: Container(
+          decoration: BrutalDecoration.brutalBox(),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Logout',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Are you sure you want to logout?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  // CANCEL
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BrutalDecoration.brutalBox(
+                          color: const Color(0xFFD0D0D0),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 16),
+
+                  // LOGOUT
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        // TODO: perform logout
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BrutalDecoration.brutalBox(
+                          color: const Color(0xFFFF5C5C),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'Logout',
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red[700],
-            ),
-            child: const Text('Logout'),
-            onPressed: () {
-              Navigator.pop(context);
-              // Perform logout action
-            },
-          ),
-        ],
+        ),
       ),
     );
   }

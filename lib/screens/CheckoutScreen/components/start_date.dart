@@ -48,9 +48,16 @@ class _StartDateState extends State<StartDate> {
   }
 
   Widget _buildCalendar() {
+    final firstAvailableDay = DateTime.now().add(const Duration(days: 2));
+
+    // Ensure _selectedDate is within valid range
+    if (_selectedDate.isBefore(firstAvailableDay)) {
+      _selectedDate = firstAvailableDay;
+    }
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.purple[50],
+        color: Colors.green[50],
         border: Border.all(color: Colors.black, width: 2),
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [BoxShadow(offset: Offset(4, 4), color: Colors.black)],
@@ -61,7 +68,7 @@ class _StartDateState extends State<StartDate> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.purple[200],
+              color: Colors.green,
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(10)),
             ),
@@ -78,7 +85,7 @@ class _StartDateState extends State<StartDate> {
 
           // Calendar widget
           TableCalendar(
-            firstDay: DateTime.now(),
+            firstDay: firstAvailableDay,
             lastDay: DateTime.now().add(const Duration(days: 90)),
             focusedDay: _selectedDate,
             selectedDayPredicate: (day) {
@@ -111,11 +118,11 @@ class _StartDateState extends State<StartDate> {
                 shape: BoxShape.circle,
               ),
               selectedDecoration: BoxDecoration(
-                color: Colors.yellow[600],
+                color: Colors.green,
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.black, width: 1),
                 boxShadow: const [
-                  BoxShadow(offset: Offset(1, 1), color: Colors.black)
+                  BoxShadow(offset: Offset(1, 1), color: Colors.black),
                 ],
               ),
               weekendTextStyle: const TextStyle(color: Colors.red),

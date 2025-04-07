@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../components/app_bar/custom_app_bar.dart';
 import '../../../components/decorations/background_painters.dart';
@@ -112,60 +113,110 @@ class _HomeTabState extends State<HomeTab> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Top section with background
-          _buildTopSection(),
+          // Background stays fixed behind everything
+          Positioned.fill(
+            child: _buildBackground(),
+          ),
 
-          // Main content with curved top that overlaps the top section
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                // Spacer to position the content below the app bar and header
-                SizedBox(height: MediaQuery.of(context).size.height * 0.48),
+          Positioned.fill(
+            top: MediaQuery.of(context).padding.top + kToolbarHeight,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(height: 20),
 
-                // Curved container that holds all content sections
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(25),
-                      topRight: Radius.circular(25),
+                  // Greeting & BMI section
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            // Shadow text for 3D effect
+                            Text(
+                              'Hello, ${widget.username}',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: -0.5,
+                                foreground: Paint()
+                                  ..style = PaintingStyle.stroke
+                                  ..strokeWidth = 6
+                                  ..color = Colors.black.withOpacity(0.4),
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    offset: const Offset(4, 4),
+                                    blurRadius: 0,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Main text
+                            Text(
+                              'Hello, ${widget.username}',
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: -0.5,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 30),
+                        BMISection(),
+                        SizedBox(height: 20),
+                      ],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: Offset(0, -5),
+                  ),
+
+                  // White content container
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(25),
+                        topRight: Radius.circular(25),
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Small padding at the top
-                      // SizedBox(height: 20),
-
-                      // BMI Section is now inside the curved container for overlap effect
-                      // Padding(
-                      //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      //   child: BMISection(),
-                      // ),
-
-                      // SizedBox(height: 20),
-
-                      // Recommendations sections
-                      RecommendedSection(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, -5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RecommendedSection(
                           fruitBowls: fruitBowls,
-                          title: 'Recommended Fruit Bowls'),
-
-                      RecommendedSection(
-                          fruitBowls: fruitBowls, title: 'Popular Fruit Bowls'),
-
-                      // Add extra padding at the bottom for scrolling
-                      SizedBox(height: 20),
-                    ],
+                          title: 'Recommended Fruit Bowls',
+                        ),
+                        RecommendedSection(
+                          fruitBowls: fruitBowls,
+                          title: 'Popular Fruit Bowls',
+                        ),
+                        SizedBox(height: 10.h),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
+            ),
+          ),
+
+          // Pinned app bar at the top
+          Positioned(
+            top: MediaQuery.of(context).padding.top,
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: CustomAppBar(username: widget.username),
             ),
           ),
         ],
@@ -173,10 +224,8 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  Widget _buildTopSection() {
+  Widget _buildBackground() {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.5,
-      width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -187,84 +236,17 @@ class _HomeTabState extends State<HomeTab> {
       ),
       child: Stack(
         children: [
-          // Enhanced 3D background effect with multiple layers
           Positioned.fill(
             child: CustomPaint(
               painter: EnhancedBackgroundPainter(),
             ),
           ),
-
-          // Background doodles of fruits and clouds with enhanced 3D effect
           CustomPaint(
-            size: Size(MediaQuery.of(context).size.width,
-                MediaQuery.of(context).size.height * 0.5),
+            size: Size(
+              MediaQuery.of(context).size.width,
+              MediaQuery.of(context).size.height,
+            ),
             painter: DoodlePainter(),
-          ),
-
-          // Safe area padding
-          Padding(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 20,
-              left: 16.0,
-              right: 16.0,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // App Bar with navigation and search
-                CustomAppBar(username: widget.username),
-
-                const SizedBox(height: 32),
-
-                // Welcome heading - bold and modern with enhanced 3D effect
-                Stack(
-                  children: [
-                    // Shadow text for 3D effect
-                    Text(
-                      'Hello, ${widget.username}',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.5,
-                        foreground: Paint()
-                          ..style = PaintingStyle.stroke
-                          ..strokeWidth = 6
-                          ..color = Colors.black.withOpacity(0.4),
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withOpacity(0.3),
-                            offset: const Offset(4, 4),
-                            blurRadius: 0,
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Main text
-                    Text(
-                      'Hello, ${widget.username}',
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.5,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 30),
-
-                BMISection(),
-                // CompactBMIResultsSection(
-                //   bmiValue: 23.7,
-                //   bmiCategory: "Normal",
-                //   height: 175,
-                //   weight: 72.5,
-                // ),
-                SizedBox(height: 10),
-                // BMI section is moved to the curved container to create overlap
-              ],
-            ),
           ),
         ],
       ),

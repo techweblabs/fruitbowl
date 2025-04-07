@@ -15,7 +15,7 @@ dependencies:
   provider: ^6.0.5
   get: ^4.6.5
   shared_preferences: ^2.1.0
-  connectivity_plus: ^3.0.3
+  
   shimmer: ^2.0.0
   quickalert: ^1.0.1
   google_fonts: ^4.0.3
@@ -37,6 +37,7 @@ dependencies:
   geolocator: ^13.0.4
   geocoding: ^3.0.0
   flutter_typeahead: ^5.2.0
+  flutter_neumorphic: ^3.2.0
 
 dev_dependencies:
   flutter_test:

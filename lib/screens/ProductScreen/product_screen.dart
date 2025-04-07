@@ -18,7 +18,7 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
     viewportFraction: 1.0, // Full width pages
     initialPage: 0,
   );
-
+  bool _showSwipeHint = true;
   // Current page indicator
   int _currentPage = 0;
 
@@ -408,30 +408,41 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
         ),
 
         // Swipe Instructions
-        Positioned(
-          bottom: 90,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: _brutalDecoration().copyWith(
-                color: Colors.yellow[50],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(Icons.swipe, size: 20),
-                  SizedBox(width: 8),
-                  Text(
-                    "Swipe to see more products",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
+        if (_showSwipeHint)
+          Positioned(
+            bottom: 90,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: _brutalDecoration().copyWith(
+                  color: Colors.yellow[50],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.swipe, size: 20),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "Swipe to see more products",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _showSwipeHint = false;
+                        });
+                      },
+                      child: const Icon(Icons.close, size: 20),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
       ],
     );
   }

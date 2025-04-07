@@ -23,15 +23,15 @@ class AccountTab extends StatelessWidget {
             // Profile header
             _buildProfileHeader(context),
             SizedBox(height: 4.h),
-            
+
             // Settings section
             _buildSettingsSection(context),
             SizedBox(height: 4.h),
-            
+
             // App section
             _buildAppSection(context),
             SizedBox(height: 4.h),
-            
+
             // Logout button
             SizedBox(
               width: double.infinity,
@@ -54,12 +54,15 @@ class AccountTab extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(
+              height: 100.h,
+            )
           ],
         ),
       ),
     );
   }
-  
+
   Widget _buildProfileHeader(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
@@ -114,7 +117,7 @@ class AccountTab extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildSettingsSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,7 +180,7 @@ class AccountTab extends StatelessWidget {
       ],
     );
   }
-  
+
   Widget _buildAppSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,7 +208,7 @@ class AccountTab extends StatelessWidget {
                   color: Colors.grey,
                 ),
                 onTap: () {},
-                ),
+              ),
               _buildDivider(),
               _buildSettingItem(
                 icon: Icons.privacy_tip,
@@ -245,7 +248,7 @@ class AccountTab extends StatelessWidget {
       ],
     );
   }
-  
+
   Widget _buildSettingItem({
     required IconData icon,
     required String title,
@@ -282,7 +285,7 @@ class AccountTab extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildDivider() {
     return Divider(
       height: 1,
@@ -291,7 +294,7 @@ class AccountTab extends StatelessWidget {
       endIndent: 0,
     );
   }
-  
+
   void _showLanguageDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -325,7 +328,7 @@ class AccountTab extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildLanguageItem({
     required BuildContext context,
     required String language,
@@ -339,7 +342,7 @@ class AccountTab extends StatelessWidget {
       },
     );
   }
-  
+
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,

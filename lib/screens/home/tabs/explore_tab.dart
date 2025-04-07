@@ -36,7 +36,7 @@ class _ExploreTabState extends State<ExploreTab> {
       body: _isLoading ? _buildLoadingContent() : _buildContent(),
     );
   }
-  
+
   Widget _buildLoadingContent() {
     return SingleChildScrollView(
       padding: EdgeInsets.all(4.w),
@@ -46,15 +46,15 @@ class _ExploreTabState extends State<ExploreTab> {
           // Shimmer header
           ShimmerWidgets.text(width: 60.w, height: 3.h),
           SizedBox(height: 2.h),
-          
+
           // Shimmer featured
           ShimmerWidgets.card(height: 25.h),
           SizedBox(height: 4.h),
-          
+
           // Shimmer section title
           ShimmerWidgets.text(width: 40.w, height: 2.5.h),
           SizedBox(height: 2.h),
-          
+
           // Shimmer items grid
           ShimmerWidgets.grid(
             crossAxisCount: 2,
@@ -65,7 +65,7 @@ class _ExploreTabState extends State<ExploreTab> {
       ),
     );
   }
-  
+
   Widget _buildContent() {
     return SingleChildScrollView(
       padding: EdgeInsets.all(4.w),
@@ -80,11 +80,11 @@ class _ExploreTabState extends State<ExploreTab> {
             ),
           ),
           SizedBox(height: 2.h),
-          
+
           // Featured card
           _buildFeaturedCard(),
           SizedBox(height: 4.h),
-          
+
           Text(
             'Popular Items',
             style: TextStyle(
@@ -93,7 +93,7 @@ class _ExploreTabState extends State<ExploreTab> {
             ),
           ),
           SizedBox(height: 2.h),
-          
+
           // Grid of items
           GridView.builder(
             shrinkWrap: true,
@@ -107,11 +107,14 @@ class _ExploreTabState extends State<ExploreTab> {
             itemCount: 4,
             itemBuilder: (context, index) => _buildGridItem(index),
           ),
+          SizedBox(
+            height: 10.h,
+          )
         ],
       ),
     );
   }
-  
+
   Widget _buildFeaturedCard() {
     return Container(
       height: 25.h,
@@ -189,7 +192,7 @@ class _ExploreTabState extends State<ExploreTab> {
       ),
     );
   }
-  
+
   Widget _buildGridItem(int index) {
     final List<String> titles = [
       'Item One',
@@ -197,21 +200,21 @@ class _ExploreTabState extends State<ExploreTab> {
       'Item Three',
       'Item Four',
     ];
-    
+
     final List<IconData> icons = [
       Icons.favorite,
       Icons.star,
       Icons.access_time,
       Icons.local_offer,
     ];
-    
+
     final List<Color> colors = [
       Colors.red,
       Colors.amber,
       Colors.blue,
       Colors.green,
     ];
-    
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -221,7 +224,7 @@ class _ExploreTabState extends State<ExploreTab> {
         onTap: () {},
         borderRadius: BorderRadius.circular(2.w),
         child: Padding(
-          padding: EdgeInsets.all(3.w),
+          padding: EdgeInsets.all(2.w),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -238,7 +241,7 @@ class _ExploreTabState extends State<ExploreTab> {
                   size: 8.w,
                 ),
               ),
-              SizedBox(height: 2.h),
+              SizedBox(height: 1.h),
               Text(
                 titles[index],
                 style: TextStyle(
@@ -251,24 +254,24 @@ class _ExploreTabState extends State<ExploreTab> {
               Text(
                 'Sample description for this item',
                 style: TextStyle(
-                  fontSize: 10.sp,
+                  fontSize: 8.sp,
                   color: Colors.grey,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 2.h),
+              SizedBox(height: 1.h),
               OutlinedButton(
                 onPressed: () {},
                 style: OutlinedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 4.h),
+                  minimumSize: Size(double.infinity, 2.h),
                   padding: EdgeInsets.symmetric(
-                    horizontal: 3.w,
+                    horizontal: 1.w,
                     vertical: 1.h,
                   ),
                 ),
                 child: Text(
                   'View Details',
-                  style: TextStyle(fontSize: 10.sp),
+                  style: TextStyle(fontSize: 9.sp),
                 ),
               ),
             ],

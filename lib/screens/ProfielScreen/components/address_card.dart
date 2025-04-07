@@ -265,31 +265,86 @@ class AddressCard extends StatelessWidget {
   void _showDeleteConfirmation(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: Colors.black, width: 2),
-        ),
-        title: const Text('Delete Address'),
-        content: const Text(
-          'Are you sure you want to delete this address?',
-        ),
-        actions: [
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () => Navigator.pop(context),
+      barrierDismissible: true,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+        child: Container(
+          decoration: BrutalDecoration.brutalBox(), // main card style
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Delete Address',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Are you sure you want to delete this address?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  // CANCEL
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BrutalDecoration.brutalBox(
+                          color: const Color(0xFFD0D0D0),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 16),
+
+                  // DELETE
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        // ← your delete logic here:
+                        // e.g. deleteAddress(addressId);
+                        //    setState(() { ... });
+                        //    ScaffoldMessenger.of(context).showSnackBar(...);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BrutalDecoration.brutalBox(
+                          color: const Color(0xFFFF5C5C),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'Delete',
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red[700],
-            ),
-            child: const Text('Delete'),
-            onPressed: () {
-              Navigator.pop(context);
-              onDelete();
-            },
-          ),
-        ],
+        ),
       ),
     );
   }
