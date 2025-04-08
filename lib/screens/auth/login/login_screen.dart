@@ -2,8 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_starter_kit/providers/apiProvider.dart';
 import 'package:flutter_starter_kit/screens/auth/otp_verification/otp_verification_screen.dart';
+import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
@@ -19,6 +22,7 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen>
     with SingleTickerProviderStateMixin {
   final String _phoneNumber = '';
   List<String> phoneDigits = [];
+  bool _isLoading = false;
 
   // Animation controller for the icon
   late AnimationController _animationController;
@@ -84,17 +88,37 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen>
     });
   }
 
-  void _handleContinue() {
+  void _handleContinue() async {
+    setState(() {
+      _isLoading = true;
+    });
     if (phoneDigits.length == 10) {
-      // Navigate to OTP verification
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => OtpVerificationScreen(
+      Provider.of<apiProvider>(context, listen: false).contactNo =
+          phoneDigits.join();
+      var result =
+          await Provider.of<apiProvider>(context, listen: false).SendOtp();
+      if (result['status'] == "OK") {
+        // Navigate to OTP verification
+        Twl.navigateToScreenAnimated(
+          context: Twl.currentContext,
+          OtpVerificationScreen(
             phoneNumber: '+91 ${phoneDigits.join()}',
           ),
-        ),
-      );
+        );
+      }
+    
+
+      setState(() {
+        _isLoading = false;
+      });
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => OtpVerificationScreen(
+      //       phoneNumber: '+91 ${phoneDigits.join()}',
+      //     ),
+      //   ),
+      // );
     }
   }
 
@@ -394,6 +418,33 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen>
                 ),
               ],
             ),
+            if (_isLoading)
+              Container(
+                color: Colors.black.withOpacity(0.2),
+                child: Center(
+                  child: Container(
+                    width: 15.w,
+                    height: 15.w,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          offset: Offset(4, 4),
+                          blurRadius: 0,
+                        )
+                      ],
+                    ),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
+                        strokeWidth: 3,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

@@ -9,6 +9,7 @@ import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../utils/brutal_decoration.dart';
+import '../CheckBMIScreen/check_bmi_screen.dart';
 import 'components/profile_header.dart';
 import 'components/profile_option.dart';
 import 'components/bmi_card.dart';
@@ -93,7 +94,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 const SizedBox(height: 24),
 
                 // BMI and Health metrics
-                BmiCard(user: _user),
+                GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CheckBMI()),
+                      );
+                    },
+                    child: BmiCard(user: _user)),
                 const SizedBox(height: 24),
 
                 // Menu options section

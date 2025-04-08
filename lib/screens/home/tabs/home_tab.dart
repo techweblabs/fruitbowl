@@ -2,11 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../../components/app_bar/custom_app_bar.dart';
 import '../../../components/decorations/background_painters.dart';
 import '../../../components/decorations/doodle_painters.dart';
-import '../../../components/sections/bmi_results.dart';
 import '../../../components/sections/bmi_section.dart';
 import '../../../components/sections/recommended_section.dart';
 import '../../../models/fruit_bowl_item.dart';

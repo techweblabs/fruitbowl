@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../providers/apiProvider.dart';
 import '../../../utils/helpers/twl.dart';
 import '../../../utils/validators/validators.dart';
 import '../../../services/storage_service.dart';
@@ -79,6 +81,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   void _verifyOtp() async {
+    
     if (otpDigits.length == 6) {
       // Show loading
       setState(() {
@@ -87,16 +90,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
       try {
         // Simulate API call
-        await Future.delayed(const Duration(seconds: 2));
-
-        // Set login status
-        await StorageService.setBool('isLoggedIn', true);
-
-        // Show success message
-        Twl.showSuccessSnackbar('Successfully verified');
-
-        // Navigate to home
-        Twl.navigateToScreenClearStack(HomeScreen());
+        Provider.of<apiProvider>(context, listen: false).otp = otpDigits.join();
+        await Provider.of<apiProvider>(context, listen: false).VerifyOtp();
       } catch (e) {
         Twl.showErrorSnackbar('Failed to verify OTP. Please try again.');
         // Clear digits on failure to let user try again
@@ -118,8 +113,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
     try {
       // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
-
+      // await Future.delayed(const Duration(seconds: 1));
+      Provider.of<apiProvider>(context, listen: false).SendOtp();
       // Show success message
       Twl.showSuccessSnackbar('OTP resent successfully');
 

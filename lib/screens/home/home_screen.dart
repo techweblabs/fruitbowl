@@ -3,13 +3,9 @@ import 'package:flutter_starter_kit/screens/ProfielScreen/user_profile_page.dart
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../components/bottom_navigation.dart';
-import '../HomeDashboardScreen/home_dashboard_screen.dart';
 import 'tabs/home_tab.dart';
 import 'tabs/explore_tab.dart';
 import 'tabs/favorites_tab.dart';
-import 'tabs/account_tab.dart';
-import 'dart:math' as math;
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);

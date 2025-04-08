@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart'; // Import Firebase Core
 import 'package:flutter/services.dart';
+import 'package:flutter_starter_kit/providers/apiProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
@@ -9,10 +11,13 @@ import 'services/translation_service.dart';
 import 'utils/helpers/twl.dart';
 import 'screens/splash/splash_screen.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize services
+  // Initialize Firebase
+  await Firebase.initializeApp();
+
+  // Initialize other services
   await StorageService.init();
 
   // Set preferred orientations
@@ -41,6 +46,7 @@ class MyApp extends StatelessWidget {
         return MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (context) => ThemeProvider()),
+            ChangeNotifierProvider(create: (_) => apiProvider()),
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {

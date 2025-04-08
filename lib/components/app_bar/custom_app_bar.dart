@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'location_widget.dart';
 import 'package:flutter_starter_kit/screens/ProfielScreen/user_profile_page.dart';
 
-class CustomAppBar extends StatelessWidget {
+class CustomAppBar extends StatefulWidget {
   final String username;
 
   const CustomAppBar({
@@ -12,15 +13,36 @@ class CustomAppBar extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  String location = ''; // Moved inside the state
+
+  @override
+  void initState() {
+    super.initState();
+    // No need for Future.delayed; you can call the async function directly
+    _loadLocation();
+  }
+
+  Future<void> _loadLocation() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Use setState to update the location so the widget rebuilds immediately
+    setState(() {
+      location = prefs.getString('location') ?? '';
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // Location icon and address
         LocationWidget(
-          location: 'San Francisco, CA',
+          location: location,
         ),
-
         // Right icons
         Row(
           children: [

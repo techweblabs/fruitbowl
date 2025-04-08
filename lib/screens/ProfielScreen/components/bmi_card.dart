@@ -1,7 +1,5 @@
 // lib/profile/components/bmi_card.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_starter_kit/screens/ProfielScreen/health_details_page.dart';
-import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../utils/brutal_decoration.dart';
@@ -180,7 +178,6 @@ class BmiCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 // Indicator needle
                 Transform.rotate(
                   angle: 3.14 * 1.2 + (user.bmi / 50 * 2 * 3.14),
@@ -306,9 +303,9 @@ class BmiCard extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               "Goal Progress",
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),

@@ -44,7 +44,7 @@ class LocationWidget extends StatelessWidget {
             const Text(
               'Current Location',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 14,
                 color: Colors.white70,
               ),
             ),

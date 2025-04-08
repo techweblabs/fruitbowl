@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_starter_kit/screens/ProfielScreen/user_profile_page.dart';
+import 'package:flutter_starter_kit/screens/CheckBMIScreen/check_bmi_screen.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:sizer/sizer.dart';
 
@@ -125,7 +125,7 @@ class BMISection extends StatelessWidget {
       child: Container(
         width: 180,
         height: 150,
-        decoration: BoxDecoration(),
+        decoration: const BoxDecoration(),
         child: Image.asset(
           'assets/images/bmi_person-removebg-preview.png',
           fit: BoxFit.cover,
@@ -136,7 +136,7 @@ class BMISection extends StatelessWidget {
   }
 
   Widget _buildTitle() {
-    return Stack(
+    return const Stack(
       children: [
         // Shadow text
 
@@ -162,8 +162,7 @@ class BMISection extends StatelessWidget {
       alignment: Alignment.center,
       child: GestureDetector(
         onTap: () {
-          Twl.navigateToScreen(UserProfilePage());
-
+          Twl.navigateToScreen(CheckBMI());
           // Handle profile
         },
         child: Container(

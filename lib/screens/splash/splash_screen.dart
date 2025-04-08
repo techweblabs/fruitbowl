@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-import '../../constants/image_constants.dart';
 import '../../services/storage_service.dart';
 import '../../utils/helpers/twl.dart';
+import '../LocationFetchScreen/location_fetch_screen.dart';
 import '../onboarding/onboarding_screen.dart';
-import '../home/home_screen.dart';
-import '../auth/login/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -58,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen>
     } else if (!isLoggedIn) {
       Twl.navigateToScreenReplace(const OnboardingScreen());
     } else {
-      Twl.navigateToScreenReplace(const OnboardingScreen());
+      Twl.navigateToScreenReplace(LocationFetchScreen());
     }
   }
 

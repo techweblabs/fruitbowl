@@ -4,6 +4,9 @@ import 'package:flutter_starter_kit/screens/ProfielScreen/models/user_profile.da
 import 'package:flutter_starter_kit/utils/brutal_decoration.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
+import 'package:provider/provider.dart';
+
+import '../../../providers/apiProvider.dart';
 
 class EditProfilePage extends StatefulWidget {
   final UserProfile user;
@@ -18,7 +21,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
-  late String _selectedGender;
+  late var _selectedGender;
   late TextEditingController _heightController;
   late TextEditingController _weightController;
   late TextEditingController _ageController;
@@ -559,42 +562,39 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  void _saveProfile() {
+  void _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       // In a real app, you would update the user profile here
       // For this example, we'll just show a success message and go back
-      Map<String, String> params = {
+      Map<String, dynamic> params = {
         'name': _nameController.text,
         'email': _emailController.text,
         'phoneNumber': _phoneController.text,
-        'gender': _selectedGender,
+        'gender': _selectedGender == "Male" ? 1 : 2,
         'height': _heightController.text,
         'weight': _weightController.text,
         'age': _ageController.text,
       };
 
+      Provider.of<apiProvider>(context, listen: false).name =
+          _nameController.text;
+      Provider.of<apiProvider>(context, listen: false).email =
+          _emailController.text;
+      Provider.of<apiProvider>(context, listen: false).gender =
+          _selectedGender == "Male" ? 1 : 2;
+
+      Provider.of<apiProvider>(context, listen: false).height =
+          _heightController.text;
+      Provider.of<apiProvider>(context, listen: false).weight =
+          _weightController.text;
+      Provider.of<apiProvider>(context, listen: false).age =
+          _ageController.text;
+
       // Print the values in JSON format
       print(params);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Container(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                SizedBox(width: 8),
-                Text("Profile updated successfully"),
-              ],
-            ),
-          ),
-          backgroundColor: Colors.green[700],
-          duration: const Duration(seconds: 2),
-        ),
-      );
 
-      Future.delayed(const Duration(seconds: 2), () {
-        Navigator.pop(context);
-      });
+      await Provider.of<apiProvider>(context, listen: false)
+          .UpdateProfile(context);
     }
   }
 }

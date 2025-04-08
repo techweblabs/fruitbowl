@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/screens/auth/login/login_screen.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/theme_provider.dart';
+import '../../../services/storage_service.dart';
 import '../../../services/translation_service.dart';
 import '../../../utils/helpers/twl.dart';
 
@@ -355,8 +357,11 @@ class AccountTab extends StatelessWidget {
             child: Text('cancel'.tr),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
+            onPressed: () async {
+              await StorageService.setBool('isLoggedIn', false);
+              Twl.navigateToScreenAnimated(PhoneLoginScreen(),
+                  context: Twl.currentContext);
+
               // Perform logout action
               Twl.showSuccessSnackbar('Logged out successfully');
             },

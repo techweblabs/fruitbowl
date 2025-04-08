@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:sizer/sizer.dart';
-import '../../constants/theme_constants.dart';
-import '../../services/connectivity_service.dart';
 
 /// TWL (The Widget Library) - Common utility functions for the app
 class Twl {
