@@ -20,41 +20,13 @@ class _AddressFormState extends State<AddressForm> {
   final UserProfile _user = UserProfile(
     name: "Rahul Sharma",
     email: "rahul.sharma@example.com",
-    phoneNumber: "+91 98765 43210",
+    // phoneNumber: "+91 98765 43210",
     profileImage: "assets/images/profile.png",
     gender: "Male", // Added gender field
-    age: 32, // Added age field
+    // age: 32, // Added age field
     bmi: 28.4,
     weight: 86.2,
     height: 174,
-    addresses: [
-      UserAddress(
-        id: 1,
-        type: "Home",
-        line1: "123, Greenwood Apartments",
-        line2: "Sector 22",
-        city: "Gurgaon",
-        state: "Haryana",
-        pinCode: "122015",
-        isDefault: true,
-      ),
-      UserAddress(
-        id: 2,
-        type: "Office",
-        line1: "Block B, Cyber City",
-        line2: "DLF Phase 3",
-        city: "Gurgaon",
-        state: "Haryana",
-        pinCode: "122002",
-        isDefault: false,
-      ),
-    ],
-    dietaryPreferences: ["Low Carb", "High Protein", "No Nuts"],
-    allergies: ["Peanuts", "Shellfish"],
-    goalType: "Weight Loss",
-    targetWeight: 75.0,
-    weeklyGoal: 0.5, // kg per week
-    activityLevel: "Moderate",
   );
   // Form controllers
   final TextEditingController _addressController = TextEditingController();
@@ -112,15 +84,15 @@ class _AddressFormState extends State<AddressForm> {
               )),
           GestureDetector(
             onTap: () {
-              Twl.navigateToScreenAnimated(AddAddressPage(), context: context);
+              Twl.navigateToScreenAnimated(const AddAddressPage(), context: context);
               // AddAddressPage
             },
             child: Container(
               padding: const EdgeInsets.all(4),
-                decoration: BrutalDecoration.sectionTitle(),
-              child: Text(
+              decoration: BrutalDecoration.sectionTitle(),
+              child: const Text(
                 'Add New Address',
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),

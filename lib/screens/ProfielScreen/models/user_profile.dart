@@ -22,21 +22,20 @@ class UserProfile {
   UserProfile({
     required this.name,
     required this.email,
-    required this.phoneNumber,
     required this.profileImage,
-    required this.gender, // Required gender parameter
-    required this.age, // Required age parameter
+    required this.gender,
     required this.bmi,
     required this.weight,
     required this.height,
-    required this.addresses,
-    required this.dietaryPreferences,
-    required this.allergies,
-    required this.goalType,
-    required this.targetWeight,
-    required this.weeklyGoal,
-    required this.activityLevel,
-  });
+  })  : phoneNumber = '',
+        age = 0,
+        addresses = const [],
+        dietaryPreferences = const [],
+        allergies = const [],
+        goalType = 'Maintenance',
+        targetWeight = 0,
+        weeklyGoal = 0,
+        activityLevel = 'Sedentary';
 
   // Get BMI category
   String get bmiCategory {

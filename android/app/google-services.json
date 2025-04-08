@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "363404678440",
+    "project_id": "fruitbowl-4328c",
+    "storage_bucket": "fruitbowl-4328c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363404678440:android:e2bb72df52320108726c1d",
+        "android_client_info": {
+          "package_name": "com.fruitbowl"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbbL9-xziTjTzPBwXOlQBec_fvXRTlkRE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
