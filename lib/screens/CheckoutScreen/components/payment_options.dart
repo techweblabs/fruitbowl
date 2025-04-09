@@ -7,10 +7,12 @@ import 'section_title.dart';
 
 class PaymentOptions extends StatefulWidget {
   final String planPrice;
+  final Function(String) onPaymentMethodChanged;
 
   const PaymentOptions({
     super.key,
     required this.planPrice,
+    required this.onPaymentMethodChanged,
   });
 
   @override

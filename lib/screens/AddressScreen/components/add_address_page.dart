@@ -1,13 +1,17 @@
 // lib/screens/address/location_picker_page.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/providers/apiProvider.dart';
 import 'package:flutter_starter_kit/utils/brutal_decoration.dart';
+import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:provider/provider.dart';
 
 class AddressModel {
   final String id;
@@ -98,6 +102,26 @@ class _LocationPickerPageState extends State<AddAddressPage> {
   // Current step in the flow
   AddressPickerStep _currentStep = AddressPickerStep.mapSelection;
 
+  Future<void> _fetchAndFillAddress(double lat, double lng) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+
+        setState(() {
+          _landmarkController.text = place.subLocality ?? ""; // Area
+          _cityController.text = place.locality ?? "";
+          _stateController.text = place.administrativeArea ?? "";
+          _zipCodeController.text = place.postalCode ?? "";
+        });
+      }
+    } catch (e) {
+      print("Error fetching address: $e");
+      // Show toast/snackbar if needed
+    }
+  }
+
   // Form controllers and keys
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _cityController = TextEditingController();
@@ -108,6 +132,12 @@ class _LocationPickerPageState extends State<AddAddressPage> {
   final TextEditingController _houseNumberController = TextEditingController();
   final TextEditingController _apartmentController = TextEditingController();
   final TextEditingController _landmarkController = TextEditingController();
+  bool _leaveAtDoor = false;
+  bool _avoidCalling = false;
+  bool _isDefaultAddress = false;
+
+  final TextEditingController _deliveryInstructionsController =
+      TextEditingController();
 
   // Map related variables
   final Completer<GoogleMapController> _mapControllerCompleter = Completer();
@@ -429,26 +459,53 @@ class _LocationPickerPageState extends State<AddAddressPage> {
 
   void _saveAddress() {
     if (_formKey.currentState!.validate()) {
+      final varpro = Provider.of<apiProvider>(context, listen: false);
       // Create address model
-      final AddressModel address = AddressModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: _addressType, // Use addressType as the title
-        fullAddress:
-            '${_houseNumberController.text}, ${_streetController.text}, ${_cityController.text}, ${_stateController.text} ${_zipCodeController.text}',
-        streetAddress: _streetController.text,
-        houseNumber: _houseNumberController.text,
-        apartment: _apartmentController.text,
-        landmark: _landmarkController.text,
-        city: _cityController.text,
-        state: _stateController.text,
-        zipCode: _zipCodeController.text,
-        latitude: _currentPosition.latitude,
-        longitude: _currentPosition.longitude,
-        addressType: _addressType,
-      );
+      // final AddressModel address = AddressModel(
+      //   id: DateTime.now().millisecondsSinceEpoch.toString(),
+      //   title: _addressType, // Use addressType as the title
+      //   fullAddress:
+      //       '${_houseNumberController.text}, ${_streetController.text}, ${_cityController.text}, ${_stateController.text} ${_zipCodeController.text}',
+      //   streetAddress: _streetController.text,
+      //   houseNumber: _houseNumberController.text,
+      //   apartment: _apartmentController.text,
+      //   landmark: _landmarkController.text,
+      //   city: _cityController.text,
+      //   state: _stateController.text,
+      //   zipCode: _zipCodeController.text,
+      //   latitude: _currentPosition.latitude,
+      //   longitude: _currentPosition.longitude,
+      //   addressType: _addressType,
+      // );
+
+// Assign all values using your controllers and current location
+      varpro.addressType =
+          _addressType; // Assuming this is a TextEditingController
+      varpro.fullAddress =
+          '${_houseNumberController.text}, ${_streetController.text}, ${_cityController.text}, ${_stateController.text} ${_zipCodeController.text}';
+
+      varpro.landmark = _apartmentController.text;
+      varpro.area = _landmarkController.text;
+      varpro.flatNumber = _houseNumberController.text;
+      varpro.city = _cityController.text;
+      varpro.state = _stateController.text;
+      varpro.pincode = _zipCodeController.text;
+      varpro.latitude = _currentPosition.latitude.toString();
+      varpro.deliveryPreference = {
+        'leaveAtDoor': _leaveAtDoor,
+        'avoidCalling': _avoidCalling,
+        'deliveryInstructions': _deliveryInstructionsController.text.trim(),
+      };
+      varpro.isDefault =
+          _isDefaultAddress.toString(); // Converted to string for consistency
+      varpro.longitude = _currentPosition.longitude.toString();
+
+      varpro.AddAddress(); // Same here
+
+// If needed, trigger API call or any logic after setting the values
 
       // Print address data
-      print(address.toJson());
+      //  print(address.toJson());
 
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
@@ -470,12 +527,15 @@ class _LocationPickerPageState extends State<AddAddressPage> {
 
       // Navigate back
       Future.delayed(const Duration(seconds: 2), () {
-        Navigator.pop(context, address);
+        Navigator.pop(context);
       });
     }
   }
 
-  void _proceedToAddressDetails() {
+  void _proceedToAddressDetails() async {
+    await _fetchAndFillAddress(
+        _currentPosition.latitude, _currentPosition.longitude);
+
     setState(() {
       _currentStep = AddressPickerStep.addressDetails;
     });
@@ -524,7 +584,9 @@ class _LocationPickerPageState extends State<AddAddressPage> {
                 // Main content
                 Column(
                   children: [
-                    _buildMapSection(),
+                    Flexible(
+                      child: _buildMapSection(),
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Container(
@@ -575,24 +637,24 @@ class _LocationPickerPageState extends State<AddAddressPage> {
                                     ],
                                   ),
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.orange.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                        color: Colors.orange, width: 1),
-                                  ),
-                                  child: const Text(
-                                    "CHANGE",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.orange,
-                                    ),
-                                  ),
-                                ),
+                                // Container(
+                                //   padding: const EdgeInsets.symmetric(
+                                //       horizontal: 12, vertical: 6),
+                                //   decoration: BoxDecoration(
+                                //     color: Colors.orange.withOpacity(0.2),
+                                //     borderRadius: BorderRadius.circular(8),
+                                //     border: Border.all(
+                                //         color: Colors.orange, width: 1),
+                                //   ),
+                                //   child: const Text(
+                                //     "CHANGE",
+                                //     style: TextStyle(
+                                //       fontSize: 12,
+                                //       fontWeight: FontWeight.bold,
+                                //       color: Colors.orange,
+                                //     ),
+                                //   ),
+                                // ),
                               ],
                             ),
                           ],
@@ -1148,7 +1210,7 @@ class _LocationPickerPageState extends State<AddAddressPage> {
       children: [
         // House/Flat/Block Number
         const Text(
-          "HOUSE / FLAT / BLOCK NO.",
+          "AREA",
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
@@ -1157,27 +1219,24 @@ class _LocationPickerPageState extends State<AddAddressPage> {
         ),
         const SizedBox(height: 8),
         Container(
-          decoration: BrutalDecoration.brutalBox(),
-          child: TextFormField(
-            controller: _houseNumberController,
-            decoration: const InputDecoration(
-              hintText: "e.g. 45-54-A",
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(vertical: 8),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Please enter house/flat number";
-              }
-              return null;
-            },
-          ),
-        ),
+            decoration: BrutalDecoration.brutalBox(),
+            child: TextFormField(
+              // onTap: () {
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(builder: (context) => AddAddressPage()),
+              //   );
+              // },
+             // readOnly: true,
+              controller: _landmarkController,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(vertical: 8),
+              ),
+            )),
         const SizedBox(height: 24),
-
-        // Apartment/Road/Area
         const Text(
-          "APARTMENT / ROAD / AREA (OPTIONAL)",
+          "LandMark",
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
@@ -1190,17 +1249,20 @@ class _LocationPickerPageState extends State<AddAddressPage> {
           child: TextFormField(
             controller: _apartmentController,
             decoration: const InputDecoration(
-              hintText: "e.g. Sunrise Apartments",
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(vertical: 8),
             ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Please enter area/locality";
+              }
+              return null;
+            },
           ),
         ),
         const SizedBox(height: 24),
-
-        // Directions
         const Text(
-          "DIRECTIONS TO REACH (OPTIONAL)",
+          "FlatNumber",
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
@@ -1211,28 +1273,192 @@ class _LocationPickerPageState extends State<AddAddressPage> {
         Container(
           decoration: BrutalDecoration.brutalBox(),
           child: TextFormField(
-            controller: _landmarkController,
+            controller: _houseNumberController,
             decoration: const InputDecoration(
-              hintText: "e.g. Ring the bell on the red gate",
+              // hintText: "e.g. Madhapur",
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(vertical: 8),
             ),
-            maxLines: 3,
-            minLines: 3,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Please enter flatnumber";
+              }
+              return null;
+            },
           ),
         ),
-        const SizedBox(height: 32),
-
-        // Save address as section
+        const SizedBox(height: 24),
+// City
         const Text(
-          "SAVE THIS ADDRESS AS",
+          "CITY",
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
             color: Colors.grey,
           ),
         ),
+        const SizedBox(height: 8),
+        Container(
+            decoration: BrutalDecoration.brutalBox(),
+            child: TextFormField(
+              // onTap: () {
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(builder: (context) => AddAddressPage()),
+              //   );
+              // },
+              controller: _cityController,
+            //  readOnly: true,
+              decoration: const InputDecoration(
+                hintText: "e.g. Hyderabad",
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(vertical: 8),
+              ),
+            )),
+        const SizedBox(height: 24),
+
+// State
+        const Text(
+          "STATE",
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+            decoration: BrutalDecoration.brutalBox(),
+            child: TextFormField(
+              // onTap: () {
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(builder: (context) => AddAddressPage()),
+              //   );
+              // },
+              controller: _stateController,
+             // readOnly: true,
+              decoration: const InputDecoration(
+                hintText: "e.g. Hyderabad",
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(vertical: 8),
+              ),
+            )),
+        const SizedBox(height: 24),
+
+// Pincode
+        const Text(
+          "PINCODE",
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+            decoration: BrutalDecoration.brutalBox(),
+            child: TextFormField(
+              // onTap: () {
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(builder: (context) => AddAddressPage()),
+              //   );
+              // },
+              controller: _zipCodeController,
+              decoration: const InputDecoration(
+                hintText: "e.g. Hyderabad",
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(vertical: 8),
+              ),
+            )),
         const SizedBox(height: 16),
+        // Delivery Preference - Leave at Door
+        const Text(
+          "DELIVERY PREFERENCE",
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Checkbox(
+              value: _leaveAtDoor,
+              onChanged: (value) {
+                setState(() {
+                  _leaveAtDoor = value!;
+                });
+              },
+            ),
+            const Text("Leave at door"),
+          ],
+        ),
+        const SizedBox(height: 4),
+
+// Delivery Preference - Avoid Calling
+        Row(
+          children: [
+            Checkbox(
+              value: _avoidCalling,
+              onChanged: (value) {
+                setState(() {
+                  _avoidCalling = value!;
+                });
+              },
+            ),
+            const Text("Avoid calling"),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+// Delivery Instructions
+        const Text(
+          "DELIVERY INSTRUCTIONS",
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BrutalDecoration.brutalBox(),
+          child: TextFormField(
+            controller: _deliveryInstructionsController,
+            maxLines: 3,
+            decoration: const InputDecoration(
+              hintText: "e.g. Please leave near the door or under the mat",
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+
+// Mark as Default Address
+        Row(
+          children: [
+            Checkbox(
+              value: _isDefaultAddress,
+              onChanged: (value) {
+                setState(() {
+                  _isDefaultAddress = value!;
+                });
+              },
+            ),
+            const Text(
+              "Mark as default address",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
 
         // Address type selection
         Row(
