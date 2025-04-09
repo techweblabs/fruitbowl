@@ -93,7 +93,7 @@ class ProfileHeader extends StatelessWidget {
 
   Widget _buildEditButton(context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         Twl.navigateToScreenAnimated(EditProfilePage(user: user),
             context: context);
       },
