@@ -30,7 +30,7 @@ class Twl {
   static double get screenHeight => screenSize.height;
 
   /// Connectivity service instance
- // static final ConnectivityService _connectivityService = ConnectivityService();
+  // static final ConnectivityService _connectivityService = ConnectivityService();
 
   /// Stream of connectivity changes
   // static Stream<bool> get connectivityStream =>
@@ -46,7 +46,7 @@ class Twl {
 
     Navigator.of(context).push(
       PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 500),
+        transitionDuration: const Duration(milliseconds: 200),
         pageBuilder: (_, animation, __) => page,
         transitionsBuilder: (_, animation, __, child) {
           const begin = Offset(0.0, 1.0); // Slide from bottom

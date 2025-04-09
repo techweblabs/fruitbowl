@@ -1,28 +1,23 @@
-// lib/profile/edit_profile_page.dart
+// lib/profile/basic_details.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_starter_kit/screens/ProfielScreen/models/user_profile.dart';
 import 'package:flutter_starter_kit/screens/home/home_screen.dart';
 import 'package:flutter_starter_kit/utils/brutal_decoration.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:provider/provider.dart';
-
 import '../../../providers/apiProvider.dart';
 
-class EditProfilePage extends StatefulWidget {
-  final UserProfile user;
-
-  const EditProfilePage({super.key, required this.user});
+class BasicDetailsBody extends StatefulWidget {
+  const BasicDetailsBody({Key? key}) : super(key: key);
 
   @override
-  State<EditProfilePage> createState() => _EditProfilePageState();
+  State<BasicDetailsBody> createState() => _BasicDetailsBodyState();
 }
 
-class _EditProfilePageState extends State<EditProfilePage> {
+class _BasicDetailsBodyState extends State<BasicDetailsBody> {
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
-  // ignore: prefer_typing_uninitialized_variables
   late var _selectedGender;
   late TextEditingController _heightController;
   late TextEditingController _weightController;
@@ -31,23 +26,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool _isEditing = false;
   bool _isLoading = false;
 
+  // Since this is a fresh profile, we default the BMI values.
+  final double _bmi = 0.0;
+  final String _bmiCategory = "N/A";
+  final Color _bmiColor = Colors.black;
+
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.user.name);
-    _emailController = TextEditingController(text: widget.user.email);
-    _phoneController = TextEditingController(text: widget.user.phoneNumber);
-    _ageController = TextEditingController(text: widget.user.age.toString());
-    _selectedGender = widget.user.gender == "1"
-        ? "Male"
-        : widget.user.gender == "2"
-            ? "Female"
-            : "Other";
-    _heightController =
-        TextEditingController(text: widget.user.height.toString());
-    _weightController =
-        TextEditingController(text: widget.user.weight.toString());
-    _ageController = TextEditingController(text: widget.user.age.toString());
+    // All fields are empty by default.
+    _nameController = TextEditingController(text: "");
+    _emailController = TextEditingController(text: "");
+    _phoneController = TextEditingController(text: "");
+    _ageController = TextEditingController(text: "");
+    _selectedGender = "Male"; // default gender
+    _heightController = TextEditingController(text: "");
+    _weightController = TextEditingController(text: "");
   }
 
   @override
@@ -91,8 +85,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // _buildProfileImageSection(),
-                            // const SizedBox(height: 24),
                             _buildPersonalInfoSection(),
                             const SizedBox(height: 24),
                             _buildHealthInfoSection(),
@@ -107,7 +99,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
             ),
           ),
-          // Loading overlay
           if (_isLoading) _buildLoadingOverlay(),
         ],
       ),
@@ -134,7 +125,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Animated Loading Icon with neo-brutalism style
               _buildBrutalLoadingAnimation(),
               const SizedBox(height: 20),
               Text(
@@ -159,7 +149,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Outer rotating container
           TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: const Duration(seconds: 2),
@@ -184,7 +173,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               setState(() {}); // Rebuild to continue animation
             },
           ),
-          // Inner rotating container (opposite direction)
           TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: const Duration(seconds: 1),
@@ -209,7 +197,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               setState(() {}); // Rebuild to continue animation
             },
           ),
-          // Center dot
           Container(
             width: 20,
             height: 20,
@@ -228,25 +215,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.black, width: 1.5),
-                boxShadow: const [
-                  BoxShadow(offset: Offset(2, 2), color: Colors.black),
-                ],
-              ),
-              child: const Icon(Icons.arrow_back, color: Colors.black),
-            ),
-          ),
+          // GestureDetector(
+          //   onTap: () => Navigator.pop(context),
+          //   child: Container(
+          //     padding: const EdgeInsets.all(8),
+          //     decoration: BoxDecoration(
+          //       color: Colors.white.withOpacity(0.8),
+          //       borderRadius: BorderRadius.circular(8),
+          //       border: Border.all(color: Colors.black, width: 1.5),
+          //       boxShadow: const [
+          //         BoxShadow(offset: Offset(2, 2), color: Colors.black),
+          //       ],
+          //     ),
+          //     child: const Icon(Icons.arrow_back, color: Colors.black),
+          //   ),
+          // ),
           Expanded(
             child: Center(
               child: Text(
-                "EDIT PROFILE",
+                "BASIC DETAILS",
                 style: GoogleFonts.bangers(
                   fontSize: 28,
                   letterSpacing: 2.0,
@@ -255,25 +242,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: _isEditing
-                  ? Colors.green.withOpacity(0.2)
-                  : Colors.white.withOpacity(0.8),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                  color: _isEditing ? Colors.green[700]! : Colors.black,
-                  width: 1.5),
-              boxShadow: const [
-                BoxShadow(offset: Offset(2, 2), color: Colors.black),
-              ],
-            ),
-            child: Icon(
-              _isEditing ? Icons.check : Icons.edit,
-              color: _isEditing ? Colors.green[700] : Colors.black,
-            ),
-          ),
+          // Container(
+          //   padding: const EdgeInsets.all(8),
+          //   decoration: BoxDecoration(
+          //     color: _isEditing
+          //         ? Colors.green.withOpacity(0.2)
+          //         : Colors.white.withOpacity(0.8),
+          //     borderRadius: BorderRadius.circular(8),
+          //     border: Border.all(
+          //         color: _isEditing ? Colors.green[700]! : Colors.black,
+          //         width: 1.5),
+          //     boxShadow: const [
+          //       BoxShadow(offset: Offset(2, 2), color: Colors.black),
+          //     ],
+          //   ),
+          //   child: Icon(
+          //     _isEditing ? Icons.check : Icons.edit,
+          //     color: _isEditing ? Colors.green[700] : Colors.black,
+          //   ),
+          // ),
         ],
       ),
     );
@@ -298,8 +285,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
           ),
           const SizedBox(height: 20),
-
-          // Name field
           _buildTextField(
             controller: _nameController,
             label: "Full Name",
@@ -312,8 +297,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
             },
           ),
           const SizedBox(height: 16),
-
-          // Email field
           _buildTextField(
             controller: _emailController,
             label: "Email",
@@ -330,8 +313,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
             },
           ),
           const SizedBox(height: 16),
-
-          // Phone field
           _buildTextField(
             controller: _phoneController,
             label: "Phone Number",
@@ -345,8 +326,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
             },
           ),
           const SizedBox(height: 16),
-
-          // Gender selection
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -393,8 +372,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
           ),
           const SizedBox(height: 20),
-
-          // Age field
           _buildTextField(
             controller: _ageController,
             label: "Age",
@@ -411,11 +388,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             },
           ),
           const SizedBox(height: 16),
-
-          // Height and Weight row
           Row(
             children: [
-              // Height field
               Expanded(
                 child: _buildTextField(
                   controller: _heightController,
@@ -434,8 +408,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
               ),
               const SizedBox(width: 16),
-
-              // Weight field
               Expanded(
                 child: _buildTextField(
                   controller: _weightController,
@@ -455,10 +427,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
             ],
           ),
-
           const SizedBox(height: 16),
-
-          // Auto-calculated BMI
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -483,10 +452,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        "Current BMI: ${widget.user.bmi.toStringAsFixed(1)} (${widget.user.bmiCategory})",
+                        "Current BMI: ${_bmi.toStringAsFixed(1)} (${_bmiCategory})",
                         style: TextStyle(
                           fontSize: 12,
-                          color: widget.user.bmiColor,
+                          color: _bmiColor,
                         ),
                       ),
                     ],
@@ -546,7 +515,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Widget _buildGenderOption(String gender) {
-    final isSelected = _selectedGender == gender;
+    final bool isSelected = _selectedGender == gender;
 
     return Expanded(
       child: GestureDetector(
@@ -633,7 +602,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _isLoading = true;
       });
 
-      // In a real app, you would update the user profile here
+      // Prepare the parameters as before.
       Map<String, dynamic> params = {
         'name': _nameController.text,
         'email': _emailController.text,
@@ -650,7 +619,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           _emailController.text;
       Provider.of<apiProvider>(context, listen: false).gender =
           _selectedGender == "Male" ? 1 : 2;
-
       Provider.of<apiProvider>(context, listen: false).height =
           _heightController.text;
       Provider.of<apiProvider>(context, listen: false).weight =
@@ -658,7 +626,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
       Provider.of<apiProvider>(context, listen: false).age =
           _ageController.text;
 
-      // Print the values in JSON format
       print(params);
 
       await Provider.of<apiProvider>(context, listen: false)
@@ -671,9 +638,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       Twl.navigateToScreenAnimated(
           const HomeScreen(
-            initialIndex: 3,
+            initialIndex: 0,
           ),
-          // ignore: use_build_context_synchronously
           context: context);
     }
   }

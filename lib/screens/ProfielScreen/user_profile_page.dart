@@ -6,6 +6,7 @@ import 'package:flutter_starter_kit/screens/AddressScreen/components/add_address
 import 'package:flutter_starter_kit/screens/MyOrdersScreen/my_orders_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../utils/brutal_decoration.dart';
@@ -24,47 +25,45 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
-  // Sample user data
-  // Sample user data with added gender and age fields
-  final UserProfile _user = UserProfile(
-    name: "Rahul Sharma",
-    email: "rahul.sharma@example.com",
-    // phoneNumber: "+91 98765 43210",
-    profileImage: "assets/images/profile.png",
-    gender: "Male", // Added gender field
-    // age: 32, // Added age field
-    bmi: 28.4,
-    weight: 86.2,
-    height: 174,
-    // addresses: [
-    //   UserAddress(
-    //     id: 1,
-    //     type: "Home",
-    //     line1: "123, Greenwood Apartments",
-    //     line2: "Sector 22",
-    //     city: "Gurgaon",
-    //     state: "Haryana",
-    //     pinCode: "122015",
-    //     isDefault: true,
-    //   ),
-    //   UserAddress(
-    //     id: 2,
-    //     type: "Office",
-    //     line1: "Block B, Cyber City",
-    //     line2: "DLF Phase 3",
-    //     city: "Gurgaon",
-    //     state: "Haryana",
-    //     pinCode: "122002",
-    //     isDefault: false,
-    //   ),
-    // ],
-    // dietaryPreferences: ["Low Carb", "High Protein", "No Nuts"],
-    // allergies: ["Peanuts", "Shellfish"],
-    // goalType: "Weight Loss",
-    // targetWeight: 75.0,
-    // weeklyGoal: 0.5, // kg per week
-    // activityLevel: "Moderate",
+  // Initialize _user with default values. Adjust addresses, dietaryPreferences, and allergies
+  // as necessary if you store these in SharedPreferences.
+  UserProfile _user = UserProfile(
+    age: 1,
+    phoneNumber: "",
+    name: "",
+    email: "",
+    profileImage: "",
+    gender: "",
+    bmi: 0,
+    weight: 0,
+    height: 0,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    loaddata();
+  }
+
+  void loaddata() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Update _user with loaded preferences using setState so that the UI refreshes.
+    setState(() {
+      _user = UserProfile(
+        age: prefs.getInt("age") ?? 1,
+        phoneNumber: prefs.getString("contactNo") ?? "",
+        name: prefs.getString('name') ?? "",
+        email: prefs.getString('email') ?? "",
+        profileImage: prefs.getString('profileimage') ?? "",
+        gender: prefs.getString('gender') ?? "",
+        bmi: double.tryParse(prefs.getString('BMI') ?? "0") ?? 0,
+        weight: double.tryParse(prefs.getString('weight') ?? "0") ?? 0,
+        height: double.tryParse(prefs.getString('height') ?? "0") ?? 0,
+
+        // Here we use empty lists as defaults; update as needed if you store these values.
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,13 +94,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
                 // BMI and Health metrics
                 GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => CheckBMI()),
-                      );
-                    },
-                    child: BmiCard(user: _user)),
+                  onTap: () {
+                    Twl.navigateToScreenAnimated(CheckBMI(), context: context);
+                  },
+                  child: BmiCard(user: _user),
+                ),
                 const SizedBox(height: 24),
 
                 // Menu options section
@@ -215,7 +212,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
               onTap: () {
                 Twl.navigateToScreenAnimated(AddAddressPage(),
                     context: context);
-                // AddAddressPage
               },
               child: Container(
                 padding: const EdgeInsets.all(4),
@@ -290,11 +286,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   );
                 }).toList(),
               ),
-
               const SizedBox(height: 16),
               const Divider(),
               const SizedBox(height: 16),
-
               // Allergies
               const Text(
                 "Allergies",
@@ -329,7 +323,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   );
                 }).toList(),
               ),
-
               const SizedBox(height: 16),
               Container(
                 width: double.infinity,
@@ -465,7 +458,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
-  // 2) Use showDialog with a transparent Dialog + your Container:
+  // Use showDialog with a transparent Dialog + your Container:
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,

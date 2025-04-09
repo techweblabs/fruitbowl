@@ -1,6 +1,10 @@
 // ignore_for_file: deprecated_member_use, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/screens/CheckBMIScreen/check_bmi_screen.dart';
+import 'package:flutter_starter_kit/screens/ProfielScreen/components/bmi_card.dart';
+import 'package:flutter_starter_kit/screens/home/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import '../../../components/app_bar/custom_app_bar.dart';
 import '../../../components/decorations/background_painters.dart';
@@ -9,6 +13,7 @@ import '../../../components/sections/bmi_section.dart';
 import '../../../components/sections/recommended_section.dart';
 import '../../../models/fruit_bowl_item.dart';
 import '../../../models/program_item.dart';
+import '../../ProfielScreen/models/user_profile.dart';
 
 class HomeTab extends StatefulWidget {
   final String username;
@@ -22,6 +27,8 @@ class HomeTab extends StatefulWidget {
 class _HomeTabState extends State<HomeTab> {
   final PageController _pageController = PageController(viewportFraction: 0.85);
   int _currentPage = 0;
+  bool _checkbmi = false;
+  UserProfile? userProfile;
 
   // Program Item data
   final List<ProgramItem> programs = [
@@ -89,6 +96,7 @@ class _HomeTabState extends State<HomeTab> {
   @override
   void initState() {
     super.initState();
+    loadCheckBMI();
     _pageController.addListener(() {
       int next = _pageController.page!.round();
       if (_currentPage != next) {
@@ -96,6 +104,25 @@ class _HomeTabState extends State<HomeTab> {
           _currentPage = next;
         });
       }
+    });
+  }
+
+  Future<void> loadCheckBMI() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Use setState to update the location so the widget rebuilds immediately
+    setState(() {
+      _checkbmi = prefs.getBool('Bmicheck')!;
+      userProfile = UserProfile(
+        phoneNumber: prefs.getString("contactNo") ?? "",
+        age: prefs.getInt('age') ?? 1,
+        name: prefs.getString('name').toString(),
+        email: prefs.getString('email').toString(),
+        profileImage: prefs.getString('profileimage').toString(),
+        gender: prefs.getString('gender').toString(),
+        bmi: double.tryParse(prefs.getString('BMI').toString()) ?? 0,
+        weight: double.tryParse(prefs.getString('weight').toString()) ?? 0,
+        height: double.tryParse(prefs.getString('height').toString()) ?? 0,
+      );
     });
   }
 
@@ -164,12 +191,45 @@ class _HomeTabState extends State<HomeTab> {
                           ],
                         ),
                         SizedBox(height: 30),
-                        BMISection(),
+                        _checkbmi
+                            ? GestureDetector(
+                                onTap: () async {
+                                  final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => CheckBMI()));
+                                  if (result == true) {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => HomeScreen(
+                                                  initialIndex: 0,
+                                                )));
+                                  }
+                                },
+                                child: BmiCard(user: userProfile!))
+                            : GestureDetector(
+                                onTap: () async {
+                                  final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => CheckBMI()));
+                                  if (result == true) {
+                                    // print('setting state');
+                                    // loadCheckBMI();
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => HomeScreen(
+                                                  initialIndex: 0,
+                                                )));
+                                  }
+                                },
+                                child: BMISection()),
                         SizedBox(height: 20),
                       ],
                     ),
                   ),
-
                   // White content container
                   Container(
                     width: double.infinity,

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_starter_kit/screens/CheckBMIScreen/check_bmi_screen.dart';
-import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:sizer/sizer.dart';
 
 class BMISection extends StatelessWidget {
@@ -160,39 +158,33 @@ class BMISection extends StatelessWidget {
         ..setEntry(3, 2, 0.0005)
         ..rotateX(0.005),
       alignment: Alignment.center,
-      child: GestureDetector(
-        onTap: () {
-          Twl.navigateToScreen(CheckBMI());
-          // Handle profile
-        },
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 2.h,
-            vertical: 1.w,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 2.h,
+          vertical: 1.w,
+        ),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF7AFCFF), Color(0xFF56D0D5)],
           ),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF7AFCFF), Color(0xFF56D0D5)],
-            ),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.black, width: 2),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black,
-                offset: Offset(4, 4),
-                blurRadius: 0,
-              ),
-            ],
-          ),
-          child: Text(
-            'Calculate Now',
-            style: TextStyle(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.black, width: 2),
+          boxShadow: const [
+            BoxShadow(
               color: Colors.black,
-              fontSize: 9.sp,
-              fontWeight: FontWeight.bold,
+              offset: Offset(4, 4),
+              blurRadius: 0,
             ),
+          ],
+        ),
+        child: Text(
+          'Calculate Now',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 9.sp,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/screens/home/home_screen.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'location_widget.dart';
@@ -50,8 +51,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
             _buildIconContainer(
               icon: Icons.person,
               onTap: () {
-                Twl.navigateToScreen(UserProfilePage());
-
+                Twl.navigateToScreenAnimated(
+                    const HomeScreen(
+                      initialIndex: 3,
+                    ),
+                    context: context);
                 // Handle profile
               },
             ),

@@ -39,6 +39,7 @@ dependencies:
   geolocator: ^13.0.4
   geocoding: ^3.0.0
   flutter_typeahead: ^5.2.0
+  cloud_firestore: 
 
 dev_dependencies:
   flutter_test:
@@ -55,7 +56,7 @@ flutter:
     - assets/images/onboarding/
     - assets/images/icons/
     - assets/images/placeholders/
-    - assets/translations/
+    # - assets/translations/
     
   # fonts:
   #   - family: Schyler

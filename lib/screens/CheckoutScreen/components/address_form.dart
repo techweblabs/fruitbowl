@@ -18,6 +18,8 @@ class AddressForm extends StatefulWidget {
 
 class _AddressFormState extends State<AddressForm> {
   final UserProfile _user = UserProfile(
+    age: 0,
+    phoneNumber: "",
     name: "Rahul Sharma",
     email: "rahul.sharma@example.com",
     // phoneNumber: "+91 98765 43210",
@@ -84,7 +86,8 @@ class _AddressFormState extends State<AddressForm> {
               )),
           GestureDetector(
             onTap: () {
-              Twl.navigateToScreenAnimated(const AddAddressPage(), context: context);
+              Twl.navigateToScreenAnimated(const AddAddressPage(),
+                  context: context);
               // AddAddressPage
             },
             child: Container(

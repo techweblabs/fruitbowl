@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/screens/BasicDetailsScreen/basic_details_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import '../../services/storage_service.dart';
 import '../../utils/helpers/twl.dart';
@@ -41,23 +43,36 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigateToNextScreen() async {
-    // Check if user has seen onboarding
-    final hasSeenOnboarding = StorageService.getBool('hasSeenOnboarding');
+    // Get the user name from SharedPreferences.
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String name = prefs.getString('name') ?? "";
 
-    // Check if user is logged in
-    final isLoggedIn = StorageService.getBool('isLoggedIn');
+    // Check if user has seen onboarding and is logged in using StorageService.
+    final bool hasSeenOnboarding = StorageService.getBool('hasSeenOnboarding');
+    final bool isLoggedIn = StorageService.getBool('isLoggedIn');
 
-    // Wait for animation to complete
+    // Wait for animation to complete.
     await Future.delayed(const Duration(seconds: 2));
 
-    // Navigate to appropriate screen
+    // Navigate to the appropriate screen based on conditions.
     if (!hasSeenOnboarding) {
-      Twl.navigateToScreenReplace(const OnboardingScreen());
-    } else if (!isLoggedIn) {
-      Twl.navigateToScreenReplace(const OnboardingScreen());
-    } else {
-      Twl.navigateToScreenReplace(LocationFetchScreen());
+      // If onboarding hasn't been seen, navigate to onboarding.
+      return Twl.navigateToScreenReplace(const OnboardingScreen());
     }
+
+    if (!isLoggedIn) {
+      // If user is not logged in, navigate to onboarding (or consider a login screen).
+      return Twl.navigateToScreenReplace(const OnboardingScreen());
+    }
+
+    // At this point, the user has seen onboarding and is logged in.
+    if (name.isEmpty) {
+      // If no basic details are present, navigate to BasicDetails.
+      return Twl.navigateToScreenReplace(BasicDetails());
+    }
+
+    // Finally, navigate to the next screen.
+    return Twl.navigateToScreenReplace(LocationFetchScreen());
   }
 
   @override

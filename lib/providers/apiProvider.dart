@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../apiServices/apiApi.dart';
 import '../screens/LocationFetchScreen/location_fetch_screen.dart';
+import '../screens/ProfielScreen/models/user_profile.dart';
 import '../services/storage_service.dart';
 import '../utils/helpers/twl.dart';
 
@@ -115,6 +117,7 @@ class apiProvider with ChangeNotifier {
   }
 
   Future<void> UpdateProfile(BuildContext context) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       final params = {
         'name': _name,
@@ -123,12 +126,36 @@ class apiProvider with ChangeNotifier {
         'age': _age,
         'email': _email,
         'gender': _gender,
-        'profile_image':
-            "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Ffreepng%2Fuser-profile-avatar_13369988.html&psig=AOvVaw0WqYZF2RWdnr5LCXuqN1K5&ust=1744107133021000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCIjhkMPXxYwDFQAAAAAdAAAAABAJ",
+        'profile_image': "https://avatar.iran.liara.run/public/15",
       };
       final response = await apiApi().UpdateProfile(params);
       print(response);
       if (response['status'] == "OK") {
+        prefs.setString('weight', response['details']['weight'].toString());
+        prefs.setString('height', response['details']['height'].toString());
+        prefs.setString('BMI', response['details']['BMI'].toString());
+        prefs.setString(
+            'contactNo', response['details']['contactNo'].toString());
+        prefs.setString(
+            'bmiCategory', response['details']['bmiCategory'].toString());
+        prefs.setBool("Bmicheck", true);
+        prefs.setString('name', response['details']['name'].toString());
+        prefs.setString('email', response['details']['email'].toString());
+        prefs.setString(
+            'profileimage', response['details']['profile_image'].toString());
+        prefs.setString('gender', response['details']['gender'].toString());
+        prefs.setInt('age', response['details']['age']);
+        UserProfile(
+          age: prefs.getInt("age") ?? 1,
+          phoneNumber: prefs.getString("contactNo") ?? "",
+          name: prefs.getString('name').toString(),
+          email: prefs.getString('email').toString(),
+          profileImage: prefs.getString('profileimage').toString(),
+          gender: prefs.getString('gender').toString(),
+          bmi: double.tryParse(prefs.getString('BMI').toString()) ?? 0,
+          weight: double.tryParse(prefs.getString('weight').toString()) ?? 0,
+          height: double.tryParse(prefs.getString('height').toString()) ?? 0,
+        );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Container(
@@ -145,7 +172,7 @@ class apiProvider with ChangeNotifier {
             duration: const Duration(seconds: 2),
           ),
         );
-        Navigator.pop(context);
+       
       }
       if (response['status'] == "NOK") {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -171,6 +198,8 @@ class apiProvider with ChangeNotifier {
   }
 
   Future CheckBmi() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     try {
       final params = {
         'age': _age,
@@ -179,6 +208,18 @@ class apiProvider with ChangeNotifier {
         'gender': _gender,
       };
       final response = await apiApi().CheckBmi(params);
+      if (response['status'] == "OK") {
+        prefs.setString('weight', response['details']['weight'].toString());
+        prefs.setString('height', response['details']['height'].toString());
+        prefs.setString('BMI', response['details']['BMI'].toString());
+        prefs.setString(
+            'bmiCategory', response['details']['bmiCategory'].toString());
+        prefs.setBool("Bmicheck", true);
+        prefs.setString('name', response['details']['name'].toString());
+        prefs.setString('email', response['details']['email'].toString());
+        prefs.setString(
+            'profileimage', response['details']['profile_image'].toString());
+      }
       print(response);
       return response;
     } catch (e) {

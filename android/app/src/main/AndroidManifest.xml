@@ -13,7 +13,7 @@
             android:value="AIzaSyBut5HqGXswofazEpjsi_ta8i1lwkah4TU" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".HomeMainScreen"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""

@@ -5,36 +5,34 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
-  
-  ThemeMode get themeMode => _themeMode;
-  
+
+  // Always return light mode regardless of the stored value.
+  ThemeMode get themeMode => ThemeMode.light;
+
   ThemeProvider() {
     _loadTheme();
   }
-  
+
   Future<void> _loadTheme() async {
+    // Although this loads from your service, its value is overridden in the getter.
     _themeMode = await ThemeService.getThemeMode();
     notifyListeners();
   }
-  
+
   Future<void> setThemeMode(ThemeMode mode) async {
     _themeMode = mode;
     await ThemeService.setThemeMode(mode);
     notifyListeners();
   }
-  
+
   Future<void> toggleTheme() async {
     _themeMode = await ThemeService.toggleTheme();
     notifyListeners();
   }
-  
-  bool get isDarkMode {
-    if (_themeMode == ThemeMode.system) {
-      return WidgetsBinding.instance.window.platformBrightness == Brightness.dark;
-    }
-    return _themeMode == ThemeMode.dark;
-  }
-  
+
+  // Override isDarkMode to always return false so that the light theme is enforced.
+  bool get isDarkMode => false;
+
   // Create light theme
   ThemeData get lightTheme {
     return ThemeData(
@@ -103,7 +101,8 @@ class ThemeProvider extends ChangeNotifier {
             vertical: ThemeConstants.paddingRegular,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+            borderRadius:
+                BorderRadius.circular(ThemeConstants.borderRadiusRegular),
           ),
         ),
       ),
@@ -127,7 +126,8 @@ class ThemeProvider extends ChangeNotifier {
             vertical: ThemeConstants.paddingRegular,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+            borderRadius:
+                BorderRadius.circular(ThemeConstants.borderRadiusRegular),
           ),
         ),
       ),
@@ -135,36 +135,42 @@ class ThemeProvider extends ChangeNotifier {
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+          borderRadius:
+              BorderRadius.circular(ThemeConstants.borderRadiusRegular),
           borderSide: const BorderSide(color: Colors.grey),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+          borderRadius:
+              BorderRadius.circular(ThemeConstants.borderRadiusRegular),
           borderSide: const BorderSide(color: Colors.grey),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
-          borderSide: const BorderSide(color: ThemeConstants.primaryColorLight, width: 2),
+          borderRadius:
+              BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+          borderSide: const BorderSide(
+              color: ThemeConstants.primaryColorLight, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+          borderRadius:
+              BorderRadius.circular(ThemeConstants.borderRadiusRegular),
           borderSide: const BorderSide(color: ThemeConstants.errorColorLight),
         ),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: ThemeConstants.paddingRegular, 
+          horizontal: ThemeConstants.paddingRegular,
           vertical: ThemeConstants.paddingRegular,
         ),
       ),
       cardTheme: CardTheme(
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+          borderRadius:
+              BorderRadius.circular(ThemeConstants.borderRadiusRegular),
         ),
       ),
     );
   }
-  
-  // Create dark theme
+
+  // The darkTheme is left intact, but will never be used.
   ThemeData get darkTheme {
     return ThemeData(
       primaryColor: ThemeConstants.primaryColorDark,
@@ -228,12 +234,12 @@ class ThemeProvider extends ChangeNotifier {
             fontWeight: FontWeight.bold,
           ),
           padding: const EdgeInsets.symmetric(
-           
             horizontal: ThemeConstants.paddingRegular,
             vertical: ThemeConstants.paddingRegular,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+            borderRadius:
+                BorderRadius.circular(ThemeConstants.borderRadiusRegular),
           ),
         ),
       ),
@@ -257,7 +263,8 @@ class ThemeProvider extends ChangeNotifier {
             vertical: ThemeConstants.paddingRegular,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+            borderRadius:
+                BorderRadius.circular(ThemeConstants.borderRadiusRegular),
           ),
         ),
       ),
@@ -265,30 +272,36 @@ class ThemeProvider extends ChangeNotifier {
         filled: true,
         fillColor: ThemeConstants.surfaceColorDark,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+          borderRadius:
+              BorderRadius.circular(ThemeConstants.borderRadiusRegular),
           borderSide: const BorderSide(color: Colors.grey),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+          borderRadius:
+              BorderRadius.circular(ThemeConstants.borderRadiusRegular),
           borderSide: const BorderSide(color: Colors.grey),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
-          borderSide: const BorderSide(color: ThemeConstants.primaryColorDark, width: 2),
+          borderRadius:
+              BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+          borderSide: const BorderSide(
+              color: ThemeConstants.primaryColorDark, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+          borderRadius:
+              BorderRadius.circular(ThemeConstants.borderRadiusRegular),
           borderSide: const BorderSide(color: ThemeConstants.errorColorDark),
         ),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: ThemeConstants.paddingRegular, 
+          horizontal: ThemeConstants.paddingRegular,
           vertical: ThemeConstants.paddingRegular,
         ),
       ),
       cardTheme: CardTheme(
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ThemeConstants.borderRadiusRegular),
+          borderRadius:
+              BorderRadius.circular(ThemeConstants.borderRadiusRegular),
         ),
         color: ThemeConstants.surfaceColorDark,
       ),

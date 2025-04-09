@@ -65,7 +65,7 @@ class ProfileHeader extends StatelessWidget {
           BoxShadow(offset: Offset(4, 4), color: Colors.black),
         ],
         image: DecorationImage(
-          image: AssetImage(user.profileImage),
+          image: NetworkImage(user.profileImage),
           fit: BoxFit.cover,
         ),
       ),
