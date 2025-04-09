@@ -50,8 +50,9 @@ class LocationWidget extends StatelessWidget {
             ),
             Text(
               location,
+              maxLines: 2,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 10,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),

@@ -7,6 +7,118 @@ import '../services/storage_service.dart';
 import '../utils/helpers/twl.dart';
 
 class apiProvider with ChangeNotifier {
+  String _status = '';
+  String get status => _status;
+  set status(String value) {
+    _status = value;
+    notifyListeners();
+  }
+
+  String _isDefault = '';
+  String get isDefault => _isDefault;
+  set isDefault(String value) {
+    _isDefault = value;
+    notifyListeners();
+  }
+
+  String _userId = '';
+  String get userId => _userId;
+  set userId(String value) {
+    _userId = value;
+    notifyListeners();
+  }
+
+  String _addressId = '';
+  String get addressId => _addressId;
+  set addressId(String value) {
+    _addressId = value;
+    notifyListeners();
+  }
+
+  String _longitude = '';
+  String get longitude => _longitude;
+  set longitude(String value) {
+    _longitude = value;
+    notifyListeners();
+  }
+
+  String _latitude = '';
+  String get latitude => _latitude;
+  set latitude(String value) {
+    _latitude = value;
+    notifyListeners();
+  }
+
+  // bool _isDefault = false;
+  // bool get isDefault => _isDefault;
+  // set isDefault(bool value) {
+  //   _isDefault = value;
+  //   notifyListeners();
+  // }
+
+  Map<String, dynamic> _deliveryPreference = {};
+  Map<String, dynamic> get deliveryPreference => _deliveryPreference;
+  set deliveryPreference(Map<String, dynamic> value) {
+    _deliveryPreference = value;
+    notifyListeners();
+  }
+
+  String _pincode = '';
+  String get pincode => _pincode;
+  set pincode(String value) {
+    _pincode = value;
+    notifyListeners();
+  }
+
+  String _state = '';
+  String get state => _state;
+  set state(String value) {
+    _state = value;
+    notifyListeners();
+  }
+
+  String _city = '';
+  String get city => _city;
+  set city(String value) {
+    _city = value;
+    notifyListeners();
+  }
+
+  String _area = '';
+  String get area => _area;
+  set area(String value) {
+    _area = value;
+    notifyListeners();
+  }
+
+  String _landmark = '';
+  String get landmark => _landmark;
+  set landmark(String value) {
+    _landmark = value;
+    notifyListeners();
+  }
+
+  String _flatNumber = '';
+  String get flatNumber => _flatNumber;
+  set flatNumber(String value) {
+    _flatNumber = value;
+    notifyListeners();
+  }
+
+  String _fullAddress = '';
+  String get fullAddress => _fullAddress;
+  set fullAddress(String value) {
+    _fullAddress = value;
+    notifyListeners();
+  }
+
+  String _addressType = '';
+  String get addressType => _addressType;
+  set addressType(String value) {
+    _addressType = value;
+    notifyListeners();
+  }
+
   String _profileImage = '';
   String get profileImage => _profileImage;
   set profileImage(String value) {
@@ -222,6 +334,79 @@ class apiProvider with ChangeNotifier {
       }
       print(response);
       return response;
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> AddAddress() async {
+    try {
+      final params = {
+        'addressType': _addressType,
+        'fullAddress': _fullAddress,
+        'flatNumber': _flatNumber,
+        'landmark': _landmark,
+        'area': _area,
+        'city': _city,
+        'state': _state,
+        'pincode': _pincode.toString(),
+        'deliveryPreference': _deliveryPreference,
+        'isDefault': _isDefault,
+        'latitude': _latitude,
+        'longitude': _longitude,
+      };
+      print("params ........................$params");
+
+      final response = await apiApi().AddAddress(params);
+      print(response);
+    } catch (e) {
+      print('Error>>>>>>>>>>>>>>>>>>>>>: $e');
+    }
+  }
+
+  Future<void> GetAddress() async {
+    try {
+      final params = {};
+      final response = await apiApi().GetAddress();
+      print(response);
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> DeleteAddress() async {
+    try {
+      final params = {
+        'addressId': _addressId,
+      };
+      final response = await apiApi().DeleteAddress(params);
+      print(response);
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> UpdateAddress() async {
+    try {
+      final params = {
+        'addressId': _addressId,
+        'userId': _userId,
+        'addressType': _addressType,
+        'fullAddress': _fullAddress,
+        'flatNumber': _flatNumber,
+        'landmark': _landmark,
+        'area': _area,
+        'city': _city,
+        'state': _state,
+        'pincode': _pincode,
+        'isDefault': _isDefault,
+        'status': _status,
+        'latitude': _latitude,
+        'longitude': _longitude,
+        'deliveryPreference': _deliveryPreference,
+      };
+      final response = await apiApi().UpdateAddress(params);
+      print(response);
     } catch (e) {
       print('Error: $e');
     }

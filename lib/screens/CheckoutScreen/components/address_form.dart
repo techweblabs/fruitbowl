@@ -1,7 +1,8 @@
 // lib/checkout/components/address_form.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/apiServices/apiApi.dart';
 import 'package:flutter_starter_kit/screens/AddressScreen/components/add_address_page.dart';
-import 'package:flutter_starter_kit/screens/ProfielScreen/components/address_card.dart';
+import 'package:flutter_starter_kit/screens/CheckoutScreen/components/edit_address.dart';
 import 'package:flutter_starter_kit/screens/ProfielScreen/models/user_profile.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:sizer/sizer.dart';
@@ -10,27 +11,37 @@ import '../../../utils/brutal_decoration.dart';
 import 'section_title.dart';
 
 class AddressForm extends StatefulWidget {
-  const AddressForm({super.key});
+  // Add the callback parameter
+  final Function(Map<String, String>)? onAddressChanged;
+
+  const AddressForm({
+    super.key,
+    this.onAddressChanged,
+  });
 
   @override
   State<AddressForm> createState() => _AddressFormState();
 }
 
 class _AddressFormState extends State<AddressForm> {
+  @override
+  void initState() {
+    super.initState();
+    getAddress();
+  }
+
   final UserProfile _user = UserProfile(
     age: 0,
     phoneNumber: "",
     name: "Rahul Sharma",
     email: "rahul.sharma@example.com",
-    // phoneNumber: "+91 98765 43210",
     profileImage: "assets/images/profile.png",
-    gender: "Male", // Added gender field
-    // age: 32, // Added age field
+    gender: "Male",
     bmi: 28.4,
     weight: 86.2,
     height: 174,
   );
-  // Form controllers
+
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
@@ -38,8 +49,63 @@ class _AddressFormState extends State<AddressForm> {
   final TextEditingController _specialInstructionsController =
       TextEditingController();
 
-  // Save address for future orders
   bool _saveAddress = true;
+  String? _selectedAddressId;
+
+  List<Map<String, dynamic>>? userAddresses;
+
+  // Method to update the parent widget with selected address
+  void _updateSelectedAddress() {
+    if (widget.onAddressChanged != null &&
+        _selectedAddressId != null &&
+        userAddresses != null) {
+      final selectedAddress = userAddresses!.firstWhere(
+        (addr) => addr['_id'] == _selectedAddressId,
+        orElse: () => {},
+      );
+
+      if (selectedAddress.isNotEmpty) {
+        widget.onAddressChanged!({
+          'id': selectedAddress['_id'] ?? '',
+          'fullAddress': selectedAddress['fullAddress'] ?? '',
+          'addressType': selectedAddress['addressType'] ?? '',
+          'isDefault': (selectedAddress['isDefault'] ?? false).toString(),
+        });
+      }
+    }
+  }
+
+  Future<void> getAddress() async {
+    try {
+      var res = await apiApi().GetAddress();
+
+      if (res['status'] == 'OK' && res['details'] != null) {
+        if (mounted) {
+          // Check if widget is still mounted
+          setState(() {
+            userAddresses = List<Map<String, dynamic>>.from(res['details']);
+
+            // If we have addresses but none selected, select one
+            if (userAddresses!.isNotEmpty && _selectedAddressId == null) {
+              // Try to find default address
+              final defaultAddr = userAddresses!.firstWhere(
+                (addr) => addr['isDefault'] == true,
+                orElse: () => userAddresses!.first,
+              );
+              _selectedAddressId = defaultAddr['_id'];
+            }
+
+            // Call update method after setting initial address
+            _updateSelectedAddress();
+          });
+        }
+      } else {
+        print('Error: ${res['message']}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
+  }
 
   @override
   void dispose() {
@@ -60,218 +126,297 @@ class _AddressFormState extends State<AddressForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SectionTitle(title: "Delivery Address"),
-          SizedBox(
-            height: 3.h,
-          ),
-          // const SizedBox(height: 16),
-          // _buildAddressForm(),
-          // const SizedBox(height: 24),
-          // _buildSaveAddressOption(),
-          // const SizedBox(height: 24),
-          // _buildSpecialInstructions(),
-          ..._user.addresses.map((address) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: AddressCard(
-                  address: address,
-                  onEdit: () {
-                    // Edit address
+          SizedBox(height: 3.h),
+          userAddresses != null
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: userAddresses!.length,
+                  itemBuilder: (context, index) {
+                    final address = userAddresses![index];
+                    final isDefault = address['isDefault'];
+                    final isHome =
+                        (address['addressType'] ?? '').toLowerCase() == 'home';
+                    final isSelected = _selectedAddressId == address['_id'];
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedAddressId = address['_id'];
+                          // Update parent when address is selected
+                          _updateSelectedAddress();
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                              color: Colors.black, width: isSelected ? 2 : 1),
+                          color: isSelected
+                              ? Colors.yellow[100]
+                              : isDefault
+                                  ? Colors.green[50]
+                                  : Colors.white,
+                          boxShadow: const [
+                            BoxShadow(offset: Offset(3, 3), color: Colors.black)
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.grey[200],
+                                        border: Border.all(color: Colors.black),
+                                      ),
+                                      child: Icon(
+                                        isHome ? Icons.home : Icons.work,
+                                        color: Colors.blue,
+                                        size: 16,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      address['addressType'] ?? 'Address',
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    if (isDefault)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: const Text(
+                                          "Default",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12),
+                                        ),
+                                      )
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                address['fullAddress'] ?? '',
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  // EDIT BUTTON
+                                  // In your ListView.builder where the "Edit" button is defined
+                                  GestureDetector(
+                                    onTap: () async {
+                                      // Push the EditAddress page passing the current address data.
+                                      final res = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              EditAddress(addressData: address),
+                                        ),
+                                      );
+
+                                      // Check if the API response is returned and indicates success.
+                                      if (res != null &&
+                                          res['status'] == 'OK') {
+                                        // Update the current address object in the userAddresses list.
+                                        final updatedAddress = res['details'];
+                                        setState(() {
+                                          // Find the index of the current address using the _id.
+                                          int index = userAddresses!.indexWhere(
+                                              (addr) =>
+                                                  addr['_id'] ==
+                                                  address['_id']);
+                                          if (index != -1) {
+                                            userAddresses![index] =
+                                                updatedAddress;
+                                            _selectedAddressId =
+                                                updatedAddress['_id'];
+                                            // Optionally, update the parent widget with the new address info.
+                                            _updateSelectedAddress();
+                                          }
+                                        });
+                                      } else {
+                                        // Fallback: in case no valid response is returned, refresh addresses from API.
+                                        getAddress();
+                                      }
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                            color: Colors.grey[400]!),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.edit,
+                                              size: 16, color: Colors.black),
+                                          const SizedBox(width: 4),
+                                          const Text(
+                                            'Edit',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 10),
+
+                                  // DELETE BUTTON
+                                  GestureDetector(
+                                    onTap: () async {
+                                      bool? confirm = await showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text('Delete Address'),
+                                          content: const Text(
+                                              'Are you sure you want to delete this address?'),
+                                          actions: [
+                                            TextButton(
+                                              child: const Text('Cancel'),
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(false),
+                                            ),
+                                            TextButton(
+                                              child: const Text('Delete'),
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(true),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+
+                                      if (confirm == true) {
+                                        try {
+                                          var res =
+                                              await apiApi().DeleteAddress({
+                                            'addressId': address['_id'],
+                                          });
+
+                                          print('DeleteAddress response: $res');
+                                          if (res['status'] == 'OK') {
+                                            setState(() {
+                                              userAddresses!.removeAt(index);
+                                              if (_selectedAddressId ==
+                                                  address['_id']) {
+                                                _selectedAddressId = null;
+                                              }
+                                              // Update parent after deletion
+                                              _updateSelectedAddress();
+                                            });
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(res['message'] ??
+                                                    'Address deleted'),
+                                                backgroundColor: Colors.green,
+                                              ),
+                                            );
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(res['message'] ??
+                                                    'Failed to delete'),
+                                                backgroundColor: Colors.red,
+                                              ),
+                                            );
+                                          }
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'An error occurred while deleting the address'),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red[50],
+                                        borderRadius: BorderRadius.circular(6),
+                                        border:
+                                            Border.all(color: Colors.red[300]!),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.delete,
+                                              size: 16, color: Colors.red),
+                                          const SizedBox(width: 4),
+                                          const Text(
+                                            'Delete',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
                   },
-                  onDelete: () {
-                    // Delete address
-                  },
-                  onSetDefault: () {
-                    // Set as default
-                  },
-                ),
-              )),
+                )
+              : const Center(child: CircularProgressIndicator()),
           GestureDetector(
-            onTap: () {
-              Twl.navigateToScreenAnimated(const AddAddressPage(),
-                  context: context);
-              // AddAddressPage
+            onTap: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddAddressPage(),
+                ),
+              );
+
+              // Refresh addresses regardless of return value
+              // This ensures we always get the latest data
+              getAddress();
             },
             child: Container(
               padding: const EdgeInsets.all(4),
+              margin: const EdgeInsets.only(top: 16),
               decoration: BrutalDecoration.sectionTitle(),
               child: const Text(
                 'Add New Address',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAddressForm() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.orange[50],
-        border: Border.all(color: Colors.black, width: 2),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [BoxShadow(offset: Offset(4, 4), color: Colors.black)],
-      ),
-      child: Column(
-        children: [
-          _buildTextField(
-            controller: _addressController,
-            label: "Street Address",
-            hint: "Enter your street address",
-            icon: Icons.home,
-          ),
-          const SizedBox(height: 16),
-          _buildTextField(
-            controller: _cityController,
-            label: "City",
-            hint: "Enter your city",
-            icon: Icons.location_city,
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildTextField(
-                  controller: _stateController,
-                  label: "State",
-                  hint: "State",
-                  icon: Icons.map,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildTextField(
-                  controller: _zipController,
-                  label: "Zip Code",
-                  hint: "Zip",
-                  icon: Icons.pin_drop,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Container(
-          decoration: BrutalDecoration.textField(),
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              prefixIcon: Icon(icon),
-              hintText: hint,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 12,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSaveAddressOption() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _saveAddress = !_saveAddress;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.grey[100],
-          border: Border.all(color: Colors.black, width: 2),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(offset: Offset(3, 3), color: Colors.black)
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BrutalDecoration.checkbox(isChecked: _saveAddress),
-              child: _saveAddress
-                  ? const Center(
-                      child: Icon(
-                        Icons.check,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                    )
-                  : null,
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Text(
-                "Save this address for future orders",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSpecialInstructions() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.blue[50],
-        border: Border.all(color: Colors.black, width: 2),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [BoxShadow(offset: Offset(3, 3), color: Colors.black)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Special Instructions (Optional)",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            height: 100,
-            padding: const EdgeInsets.all(12),
-            decoration: BrutalDecoration.textField(),
-            child: TextField(
-              controller: _specialInstructionsController,
-              maxLines: 4,
-              decoration: const InputDecoration(
-                hintText: "E.g. Door code, landmark, etc.",
-                border: InputBorder.none,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
           ),

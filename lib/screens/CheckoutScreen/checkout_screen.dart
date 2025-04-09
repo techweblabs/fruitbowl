@@ -43,6 +43,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   // Selected plan index
   late int _selectedPlanIndex;
 
+  // Add address data
+  Map<String, String> _addressData = {};
+
+  // Add payment method
+  String _paymentMethod = '';
+
   // Scroll controller for the stepper
   final ScrollController _scrollController = ScrollController();
 
@@ -66,6 +72,31 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   String get _planPrice =>
       widget.selectedProduct['plans'][_selectedPlanIndex]['price'];
 
+  // Method to print checkout selections
+  void _printCheckoutSelections() {
+    // Create a map with all selections
+    final checkoutData = {
+      'Product': widget.selectedProduct['name'],
+      'Plan':
+          '${_planDays} Day Plan (${widget.selectedProduct['plans'][_selectedPlanIndex]['savings']} savings)', // Use available fields
+      'Days': _planDays.toString(),
+      'Price': _planPrice,
+      'Delivery Option': _deliveryOption,
+      'Start Date':
+          _selectedDate.toString().split(' ')[0], // Just the date part
+      'Time Slot': _selectedSlot,
+      'Address': _addressData.toString(),
+      'Payment Method': _paymentMethod,
+    };
+
+    // Print to console
+    print('====== CHECKOUT SELECTIONS ======');
+    checkoutData.forEach((key, value) {
+      print('$key: $value');
+    });
+    print('================================');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,6 +118,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         currentStep: _currentStep,
         onBack: _goToPreviousStep,
         onNext: _goToNextStep,
+        onPaymentSubmit: _printCheckoutSelections, // Add this new parameter
       ),
     );
   }
@@ -160,10 +192,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           },
         );
       case 5:
-        return const AddressForm();
+        // Modify AddressForm to return address data
+        return AddressForm(
+          onAddressChanged: (addressData) {
+            setState(() {
+              _addressData = addressData;
+            });
+          },
+        );
       case 6:
+        // Modify PaymentOptions to return selected payment method
         return PaymentOptions(
           planPrice: _planPrice,
+          onPaymentMethodChanged: (method) {
+            setState(() {
+              _paymentMethod = method;
+            });
+          },
         );
       default:
         return Container();

@@ -9,12 +9,14 @@ class BottomNav extends StatelessWidget {
   final int currentStep;
   final VoidCallback onBack;
   final VoidCallback onNext;
+  final VoidCallback? onPaymentSubmit; // New callback for payment submission
 
   const BottomNav({
     super.key,
     required this.currentStep,
     required this.onBack,
     required this.onNext,
+    this.onPaymentSubmit, // Add this optional callback
   });
 
   @override
@@ -59,6 +61,11 @@ class BottomNav extends StatelessWidget {
           GestureDetector(
             onTap: () {
               if (currentStep == 6) {
+                // Call the payment callback if provided
+                if (onPaymentSubmit != null) {
+                  onPaymentSubmit!();
+                }
+
                 // Show loading dialog
                 showDialog(
                   context: context,
