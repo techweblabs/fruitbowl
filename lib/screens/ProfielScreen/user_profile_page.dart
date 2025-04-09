@@ -165,9 +165,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 _buildAddressSection(),
                 const SizedBox(height: 24),
 
-                // Dietary preferences section
-                _buildDietarySection(),
-                const SizedBox(height: 24),
+                // // Dietary preferences section
+                // _buildDietarySection(),
+                // const SizedBox(height: 24),
 
                 // Settings and logout
                 _buildSettingsSection(),
@@ -423,23 +423,123 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 onTap: () async {
                                   bool? confirm = await showDialog(
                                     context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: const Text('Delete Address'),
-                                      content: const Text(
-                                          'Are you sure you want to delete this address?'),
-                                      actions: [
-                                        TextButton(
-                                          child: const Text('Cancel'),
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(false),
+                                    barrierDismissible: true,
+                                    builder: (context) {
+                                      return Dialog(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16)),
+                                        backgroundColor: Colors.transparent,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BrutalDecoration
+                                              .brutalBox(), // Your custom brutal style
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Text(
+                                                'Delete Address',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 16),
+                                              const Text(
+                                                'Are you sure you want to delete this address?',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(fontSize: 16),
+                                              ),
+                                              const SizedBox(height: 24),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: GestureDetector(
+                                                      onTap: () =>
+                                                          Navigator.of(context)
+                                                              .pop(false),
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 12),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color:
+                                                              Colors.grey[300],
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(12),
+                                                          boxShadow: const [
+                                                            BoxShadow(
+                                                              color:
+                                                                  Colors.black,
+                                                              offset:
+                                                                  Offset(4, 4),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: const Text(
+                                                          'Cancel',
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: GestureDetector(
+                                                      onTap: () =>
+                                                          Navigator.of(context)
+                                                              .pop(true),
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color:
+                                                              Colors.red[300],
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(12),
+                                                          boxShadow: const [
+                                                            BoxShadow(
+                                                              color:
+                                                                  Colors.black,
+                                                              offset:
+                                                                  Offset(4, 4),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: const Text(
+                                                          'Delete',
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16,
+                                                            color: Colors.black,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                        TextButton(
-                                          child: const Text('Delete'),
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(true),
-                                        ),
-                                      ],
-                                    ),
+                                      );
+                                    },
                                   );
 
                                   if (confirm == true) {
@@ -511,7 +611,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     ],
                                   ),
                                 ),
-                              ),
+                              )
                             ],
                           ),
                         ],
@@ -750,6 +850,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ),
           ),
         ),
+        SizedBox(height: 10.h),
       ],
     );
   }
@@ -757,31 +858,87 @@ class _UserProfilePageState extends State<UserProfilePage> {
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      barrierDismissible: true,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: Colors.black, width: 2),
+          borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text('Logout'),
-        content: const Text(
-          'Are you sure you want to logout?',
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BrutalDecoration.brutalBox(), // Your custom decoration
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Logout',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Are you sure you want to logout?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.black, width: 2),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        // Perform logout action
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.red[300],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.black, width: 2),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Logout',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () => Navigator.pop(context),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red[700],
-            ),
-            child: const Text('Logout'),
-            onPressed: () {
-              Navigator.pop(context);
-              // Perform logout action
-            },
-          ),
-        ],
       ),
     );
   }
