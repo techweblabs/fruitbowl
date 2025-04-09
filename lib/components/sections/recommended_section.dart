@@ -24,7 +24,7 @@ class RecommendedSection extends StatelessWidget {
         children: [
           // Section title with simple neo-brutalist style
           Padding(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
                 left: 16.0, right: 16.0, top: 24.0, bottom: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -67,7 +67,7 @@ class RecommendedSection extends StatelessWidget {
   Widget _buildViewAllButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Twl.navigateToScreenAnimated(ProductScreen(), context: context);
+        Twl.navigateToScreenAnimated(const ProductScreen(), context: context);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),

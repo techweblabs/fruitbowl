@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../apiServices/apiApi.dart';
+import '../screens/BasicDetailsScreen/basic_details_screen.dart';
 import '../screens/LocationFetchScreen/location_fetch_screen.dart';
 import '../screens/ProfielScreen/models/user_profile.dart';
 import '../services/storage_service.dart';
@@ -207,6 +208,8 @@ class apiProvider with ChangeNotifier {
   }
 
   Future<void> VerifyOtp() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String name = prefs.getString('name') ?? "";
     try {
       final params = {
         'contactNo': _contactNo,
@@ -214,11 +217,15 @@ class apiProvider with ChangeNotifier {
         'session_code': _sessionCode,
       };
       final response = await apiApi().VerifyOtp(params);
-
       print(response);
       if (response['status'] == "OK") {
         // Navigate to home
-        Twl.navigateToScreenClearStack(LocationFetchScreen());
+        if (name.isEmpty) {
+          // If no basic details are present, navigate to BasicDetails.
+          return Twl.navigateToScreenReplace(BasicDetails());
+        } else {
+          Twl.navigateToScreenClearStack(LocationFetchScreen());
+        }
         await StorageService.setBool('isLoggedIn', true);
         // Show success message
         Twl.showSuccessSnackbar('Successfully verified');
@@ -268,6 +275,7 @@ class apiProvider with ChangeNotifier {
           weight: double.tryParse(prefs.getString('weight').toString()) ?? 0,
           height: double.tryParse(prefs.getString('height').toString()) ?? 0,
         );
+        CheckBmi();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Container(
@@ -284,7 +292,6 @@ class apiProvider with ChangeNotifier {
             duration: const Duration(seconds: 2),
           ),
         );
-       
       }
       if (response['status'] == "NOK") {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -321,6 +328,27 @@ class apiProvider with ChangeNotifier {
       };
       final response = await apiApi().CheckBmi(params);
       if (response['status'] == "OK") {
+        final bmiCategoryValue = response['details']['bmiCategory'];
+
+        // Map numeric BMI category to string
+        String bmiCategoryStr;
+        switch (bmiCategoryValue) {
+          case 1:
+            bmiCategoryStr = "underweight";
+            break;
+          case 2:
+            bmiCategoryStr = "normal";
+            break;
+          case 3:
+            bmiCategoryStr = "overweight";
+            break;
+          case 4:
+            bmiCategoryStr = "obese";
+            break;
+          default:
+            bmiCategoryStr = "";
+        }
+
         prefs.setString('weight', response['details']['weight'].toString());
         prefs.setString('height', response['details']['height'].toString());
         prefs.setString('BMI', response['details']['BMI'].toString());
@@ -331,6 +359,18 @@ class apiProvider with ChangeNotifier {
         prefs.setString('email', response['details']['email'].toString());
         prefs.setString(
             'profileimage', response['details']['profile_image'].toString());
+        prefs.setString('BMIStr', bmiCategoryStr);
+        UserProfile(
+          age: prefs.getInt("age") ?? 1,
+          phoneNumber: prefs.getString("contactNo") ?? "",
+          name: prefs.getString('name').toString(),
+          email: prefs.getString('email').toString(),
+          profileImage: prefs.getString('profileimage').toString(),
+          gender: prefs.getString('gender').toString(),
+          bmi: double.tryParse(prefs.getString('BMI').toString()) ?? 0,
+          weight: double.tryParse(prefs.getString('weight').toString()) ?? 0,
+          height: double.tryParse(prefs.getString('height').toString()) ?? 0,
+        );
       }
       print(response);
       return response;

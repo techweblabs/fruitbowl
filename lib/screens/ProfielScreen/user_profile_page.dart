@@ -7,11 +7,10 @@ import 'package:flutter_starter_kit/screens/AddressScreen/components/add_address
 import 'package:flutter_starter_kit/screens/CheckoutScreen/components/edit_address.dart';
 import 'package:flutter_starter_kit/screens/MyOrdersScreen/my_orders_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sizer/sizer.dart';
-
 import '../../utils/brutal_decoration.dart';
+import '../CheckBMIScreen/check_bmi_screen.dart';
+import '../home/home_screen.dart';
 import 'components/profile_header.dart';
 import 'components/profile_option.dart';
 import 'components/bmi_card.dart';
@@ -31,7 +30,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
   void initState() {
     super.initState();
     getAddress();
+    loaddata();
   }
+
+  UserProfile _user = UserProfile(
+    age: 1,
+    phoneNumber: "",
+    name: "",
+    email: "",
+    profileImage: "",
+    gender: "",
+    bmi: 0,
+    weight: 0,
+    height: 0,
+  );
 
   String? _selectedAddressId;
 
@@ -54,6 +66,25 @@ class _UserProfilePageState extends State<UserProfilePage> {
         });
       }
     }
+  }
+
+  void loaddata() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Update _user with loaded preferences using setState so that the UI refreshes.
+    setState(() {
+      _user = UserProfile(
+        age: prefs.getInt("age") ?? 1,
+        phoneNumber: prefs.getString("contactNo") ?? "",
+        name: prefs.getString('name') ?? "",
+        email: prefs.getString('email') ?? "",
+        profileImage: prefs.getString('profileimage') ?? "",
+        gender: prefs.getString('gender') ?? "",
+        bmi: double.tryParse(prefs.getString('BMI') ?? "0") ?? 0,
+        weight: double.tryParse(prefs.getString('weight') ?? "0") ?? 0,
+        height: double.tryParse(prefs.getString('height') ?? "0") ?? 0,
+        // Here we use empty lists as defaults; update as needed if you store these values.
+      );
+    });
   }
 
   Future<void> getAddress() async {
@@ -84,48 +115,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
   // Sample user data with added gender and age fields
   bool _saveAddress = true;
 
-  final UserProfile _user = UserProfile(
-    age: 1,
-    phoneNumber: "",
-    name: "Rahul Sharma",
-    email: "rahul.sharma@example.com",
-    //phoneNumber: "+91 98765 43210",
-    profileImage: "assets/images/profile.png",
-    gender: "Male", // Added gender field
-    // age: 32, // Added age field
-    bmi: 28.4,
-    weight: 86.2,
-    height: 174,
-    // addresses: [
-    //   UserAddress(
-    //     id: 1,
-    //     type: "Home",
-    //     line1: "123, Greenwood Apartments",
-    //     line2: "Sector 22",
-    //     city: "Gurgaon",
-    //     state: "Haryana",
-    //     pinCode: "122015",
-    //     isDefault: true,
-    //   ),
-    //   UserAddress(
-    //     id: 2,
-    //     type: "Office",
-    //     line1: "Block B, Cyber City",
-    //     line2: "DLF Phase 3",
-    //     city: "Gurgaon",
-    //     state: "Haryana",
-    //     pinCode: "122002",
-    //     isDefault: false,
-    //   ),
-    // ],
-    // dietaryPreferences: ["Low Carb", "High Protein", "No Nuts"],
-    // allergies: ["Peanuts", "Shellfish"],
-    // goalType: "Weight Loss",
-    // targetWeight: 75.0,
-    // weeklyGoal: 0.5, // kg per week
-    // activityLevel: "Moderate",
-  );
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,9 +141,24 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 // Profile header with user info
                 ProfileHeader(user: _user),
                 const SizedBox(height: 24),
-
                 // BMI and Health metrics
-                BmiCard(user: _user),
+                GestureDetector(
+                  onTap: () async {
+                    final result = await Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => CheckBMI()));
+                    if (result == true) {
+                      // print('setting state');
+                      // loadCheckBMI();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomeScreen(
+                                    initialIndex: 3,
+                                  )));
+                    }
+                  },
+                  child: BmiCard(user: _user),
+                ),
                 const SizedBox(height: 24),
 
                 // Menu options section

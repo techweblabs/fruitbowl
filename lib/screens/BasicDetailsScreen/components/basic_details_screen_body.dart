@@ -1,5 +1,6 @@
 // lib/profile/basic_details.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/screens/LocationFetchScreen/location_fetch_screen.dart';
 import 'package:flutter_starter_kit/screens/home/home_screen.dart';
 import 'package:flutter_starter_kit/utils/brutal_decoration.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -636,11 +637,7 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
         _isEditing = false;
       });
 
-      Twl.navigateToScreenAnimated(
-          const HomeScreen(
-            initialIndex: 0,
-          ),
-          context: context);
+      Twl.navigateToScreenAnimated(LocationFetchScreen(), context: context);
     }
   }
 }

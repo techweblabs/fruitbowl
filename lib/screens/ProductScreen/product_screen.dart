@@ -1,8 +1,7 @@
-import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../CheckoutScreen/checkout_screen.dart';
 
 class ProductScreen extends StatefulWidget {
@@ -23,12 +22,12 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
   int _currentPage = 0;
 
   // Selected plan index (default: 1 - the middle plan)
-  int _selectedPlanIndex = 1;
+  int _selectedPlanIndex = 0;
 
   // Sample product data
   final List<Map<String, dynamic>> _products = [
     {
-      'name': 'Healthy Fruit Bowl',
+      'name': 'Large Bowl',
       'description': 'Medium Bowl • 400g',
       'price': '₹89',
       'plans': [
@@ -54,9 +53,9 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
         'No added sugar or preservatives',
       ],
       'gradientColors': [
-        Color(0xFF8ECAE6),
-        Color(0xFF219EBC),
-        Color(0xFF023047),
+        const Color(0xFF8ECAE6),
+        const Color(0xFF219EBC),
+        const Color(0xFF023047),
       ],
     },
     {
@@ -86,9 +85,9 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
         'Natural sweetness',
       ],
       'gradientColors': [
-        Color(0xFFF4A261),
-        Color(0xFFE76F51),
-        Color(0xFF264653),
+        const Color(0xFFF4A261),
+        const Color(0xFFE76F51),
+        const Color(0xFF264653),
       ],
     },
     {
@@ -118,16 +117,105 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
         'Supports immune system',
       ],
       'gradientColors': [
-        Color(0xFF2A9D8F),
-        Color(0xFF43AA8B),
-        Color(0xFF264653),
+        const Color(0xFF2A9D8F),
+        const Color(0xFF43AA8B),
+        const Color(0xFF264653),
       ],
     },
   ];
 
+  Future<void> fetchFruitBowls() async {
+    final sizesSnapshot = await FirebaseFirestore.instance
+        .collection('fruitBowls')
+        .doc('obese')
+        .collection('sizes')
+        .get();
+
+    for (final sizeDoc in sizesSnapshot.docs) {
+      final sizeData = sizeDoc.data() as Map<String, dynamic>;
+      final sizeName = sizeDoc.id; // small, medium, large
+
+      // Extract dailyPrice and weight
+      final dailyPrice = (sizeData['dailyPrice'] is num)
+          ? (sizeData['dailyPrice'] as num).toDouble()
+          : double.tryParse(sizeData['dailyPrice']?.toString() ?? '0') ?? 0.0;
+      final weight = (sizeData['weight'] is num)
+          ? (sizeData['weight'] as num).toDouble()
+          : double.tryParse(sizeData['weight']?.toString() ?? '0') ?? 0.0;
+
+      // Extract discount map
+      final discountMap = (sizeData['discount'] as Map<dynamic, dynamic>?)
+              ?.map<String, int>(
+            (key, value) =>
+                MapEntry(key.toString(), int.tryParse(value.toString()) ?? 0),
+          ) ??
+          <String, int>{};
+
+      // Fetch items data (calories and ingredients)
+      final itemsSnapshot = await sizeDoc.reference.collection('items').get();
+      int totalCalories = 0;
+      List<Map<String, dynamic>> ingredients = []; // New list for ingredients
+
+      for (final itemDoc in itemsSnapshot.docs) {
+        final itemData = itemDoc.data();
+
+        // Calculate total calories
+        final itemCalories = (itemData['calories'] is num)
+            ? (itemData['calories'] as num).toInt()
+            : int.tryParse(itemData['calories']?.toString() ?? '0') ?? 0;
+        totalCalories += itemCalories;
+
+        // Extract ingredient data
+        ingredients.add({
+          'name': itemData['name']?.toString() ?? 'Unknown',
+          'qty': "${itemData['qty']?.toString()}g" ??
+              '0g', // Ensure format like "15g"
+        });
+      }
+      setState(() {
+        for (var product in _products) {
+          if (product['description'] != null &&
+              product['description']
+                  .toString()
+                  .toLowerCase()
+                  .contains(sizeName)) {
+            // Update basic fields
+            product['calories'] = '$totalCalories kcal';
+            product['price'] = '₹${dailyPrice.round()}';
+            product['weight'] = '${weight.round()}g';
+            product['name'] = '$sizeName Bowl';
+            // Update ingredients list
+            product['ingredients'] = ingredients; // Replace hardcoded data
+            // Generate discount plans (existing logic)
+            List<Map<String, dynamic>> newPlans = [];
+            discountMap.forEach((daysStr, discountPercent) {
+              int days = int.tryParse(daysStr) ?? 0;
+              if (days > 0 && discountPercent > 0) {
+                double total = dailyPrice * days;
+                double discountedPrice = total * (1 - discountPercent / 100);
+                newPlans.add({
+                  'days': days,
+                  'price': '₹${discountedPrice.round()}',
+                  'savings': '$discountPercent%',
+                });
+              }
+            });
+            newPlans.sort((a, b) => a['days'].compareTo(b['days']));
+            product['plans'] = newPlans;
+            product['description'] = sizeData['description'];
+
+            break;
+          }
+        }
+      });
+      // Update matching product
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    fetchFruitBowls();
     _pageController.addListener(() {
       int next = _pageController.page!.round();
       if (_currentPage != next) {
@@ -311,7 +399,7 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Text(
                     product['description'],
-                    style: TextStyle(fontSize: 16, color: Colors.grey[900]),
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -348,8 +436,8 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
                       color: Colors.white,
                       letterSpacing: 1.2,
                       shadows: [
-                        Shadow(
-                          offset: const Offset(1.5, 1.5),
+                        const Shadow(
+                          offset: Offset(1.5, 1.5),
                           blurRadius: 0,
                           color: Colors.black,
                         ),
@@ -373,8 +461,8 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
                       color: Colors.white,
                       letterSpacing: 1.2,
                       shadows: [
-                        Shadow(
-                          offset: const Offset(1.5, 1.5),
+                        const Shadow(
+                          offset: Offset(1.5, 1.5),
                           blurRadius: 0,
                           color: Colors.black,
                         ),

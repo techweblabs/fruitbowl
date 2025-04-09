@@ -52,7 +52,8 @@ class LocationWidget extends StatelessWidget {
               location,
               maxLines: 2,
               style: const TextStyle(
-                fontSize: 10,
+                overflow: TextOverflow.ellipsis,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),

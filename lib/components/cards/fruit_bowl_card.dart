@@ -23,7 +23,7 @@ class _FruitBowlCardState extends State<FruitBowlCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Twl.navigateToScreenAnimated(ProductScreen(), context: context);
+        Twl.navigateToScreenAnimated(const ProductScreen(), context: context);
       },
       child: Container(
         width: 350,
@@ -92,8 +92,8 @@ class _FruitBowlCardState extends State<FruitBowlCard> {
                         ],
                       ),
                       child: Text(
-                        'From ₹69/day',
-                        style: TextStyle(
+                        'From ₹${widget.bowl.price.toString()}/day',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
@@ -189,7 +189,7 @@ class _FruitBowlCardState extends State<FruitBowlCard> {
   Widget _buildSubscribeButton() {
     return GestureDetector(
       onTap: () {
-        Twl.navigateToScreenAnimated(ProductScreen(), context: context);
+        Twl.navigateToScreenAnimated(const ProductScreen(), context: context);
         // Navigator.of(context).push(_createRoute());
       },
       onTapDown: (_) => setState(() => _isPressed = true),
