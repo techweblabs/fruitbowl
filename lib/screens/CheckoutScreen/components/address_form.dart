@@ -13,7 +13,6 @@ import 'section_title.dart';
 class AddressForm extends StatefulWidget {
   // Add the callback parameter
   final Function(Map<String, String>)? onAddressChanged;
-
   const AddressForm({
     super.key,
     this.onAddressChanged,
@@ -217,178 +216,178 @@ class _AddressFormState extends State<AddressForm> {
                                 style: const TextStyle(fontSize: 14),
                               ),
                               const SizedBox(height: 12),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  // EDIT BUTTON
-                                  // In your ListView.builder where the "Edit" button is defined
-                                  GestureDetector(
-                                    onTap: () async {
-                                      // Push the EditAddress page passing the current address data.
-                                      final res = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              EditAddress(addressData: address),
-                                        ),
-                                      );
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.end,
+                              //   children: [
+                              //     // EDIT BUTTON
+                              //     // In your ListView.builder where the "Edit" button is defined
+                              //     GestureDetector(
+                              //       onTap: () async {
+                              //         // Push the EditAddress page passing the current address data.
+                              //         final res = await Navigator.push(
+                              //           context,
+                              //           MaterialPageRoute(
+                              //             builder: (context) =>
+                              //                 EditAddress(addressData: address),
+                              //           ),
+                              //         );
 
-                                      // Check if the API response is returned and indicates success.
-                                      if (res != null &&
-                                          res['status'] == 'OK') {
-                                        // Update the current address object in the userAddresses list.
-                                        final updatedAddress = res['details'];
-                                        setState(() {
-                                          // Find the index of the current address using the _id.
-                                          int index = userAddresses!.indexWhere(
-                                              (addr) =>
-                                                  addr['_id'] ==
-                                                  address['_id']);
-                                          if (index != -1) {
-                                            userAddresses![index] =
-                                                updatedAddress;
-                                            _selectedAddressId =
-                                                updatedAddress['_id'];
-                                            // Optionally, update the parent widget with the new address info.
-                                            _updateSelectedAddress();
-                                          }
-                                        });
-                                      } else {
-                                        // Fallback: in case no valid response is returned, refresh addresses from API.
-                                        getAddress();
-                                      }
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 6),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(6),
-                                        border: Border.all(
-                                            color: Colors.grey[400]!),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.edit,
-                                              size: 16, color: Colors.black),
-                                          const SizedBox(width: 4),
-                                          const Text(
-                                            'Edit',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                              //         // Check if the API response is returned and indicates success.
+                              //         if (res != null &&
+                              //             res['status'] == 'OK') {
+                              //           // Update the current address object in the userAddresses list.
+                              //           final updatedAddress = res['details'];
+                              //           setState(() {
+                              //             // Find the index of the current address using the _id.
+                              //             int index = userAddresses!.indexWhere(
+                              //                 (addr) =>
+                              //                     addr['_id'] ==
+                              //                     address['_id']);
+                              //             if (index != -1) {
+                              //               userAddresses![index] =
+                              //                   updatedAddress;
+                              //               _selectedAddressId =
+                              //                   updatedAddress['_id'];
+                              //               // Optionally, update the parent widget with the new address info.
+                              //               _updateSelectedAddress();
+                              //             }
+                              //           });
+                              //         } else {
+                              //           // Fallback: in case no valid response is returned, refresh addresses from API.
+                              //           getAddress();
+                              //         }
+                              //       },
+                              //       child: Container(
+                              //         padding: const EdgeInsets.symmetric(
+                              //             horizontal: 10, vertical: 6),
+                              //         decoration: BoxDecoration(
+                              //           color: Colors.grey[200],
+                              //           borderRadius: BorderRadius.circular(6),
+                              //           border: Border.all(
+                              //               color: Colors.grey[400]!),
+                              //         ),
+                              //         child: Row(
+                              //           children: [
+                              //             Icon(Icons.edit,
+                              //                 size: 16, color: Colors.black),
+                              //             const SizedBox(width: 4),
+                              //             const Text(
+                              //               'Edit',
+                              //               style: TextStyle(
+                              //                 fontSize: 12,
+                              //                 fontWeight: FontWeight.bold,
+                              //                 color: Colors.black,
+                              //               ),
+                              //             ),
+                              //           ],
+                              //         ),
+                              //       ),
+                              //     ),
 
-                                  const SizedBox(width: 10),
+                              //     const SizedBox(width: 10),
 
-                                  // DELETE BUTTON
-                                  GestureDetector(
-                                    onTap: () async {
-                                      bool? confirm = await showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                          title: const Text('Delete Address'),
-                                          content: const Text(
-                                              'Are you sure you want to delete this address?'),
-                                          actions: [
-                                            TextButton(
-                                              child: const Text('Cancel'),
-                                              onPressed: () =>
-                                                  Navigator.of(context)
-                                                      .pop(false),
-                                            ),
-                                            TextButton(
-                                              child: const Text('Delete'),
-                                              onPressed: () =>
-                                                  Navigator.of(context)
-                                                      .pop(true),
-                                            ),
-                                          ],
-                                        ),
-                                      );
+                              //     // DELETE BUTTON
+                              //     GestureDetector(
+                              //       onTap: () async {
+                              //         bool? confirm = await showDialog(
+                              //           context: context,
+                              //           builder: (context) => AlertDialog(
+                              //             title: const Text('Delete Address'),
+                              //             content: const Text(
+                              //                 'Are you sure you want to delete this address?'),
+                              //             actions: [
+                              //               TextButton(
+                              //                 child: const Text('Cancel'),
+                              //                 onPressed: () =>
+                              //                     Navigator.of(context)
+                              //                         .pop(false),
+                              //               ),
+                              //               TextButton(
+                              //                 child: const Text('Delete'),
+                              //                 onPressed: () =>
+                              //                     Navigator.of(context)
+                              //                         .pop(true),
+                              //               ),
+                              //             ],
+                              //           ),
+                              //         );
 
-                                      if (confirm == true) {
-                                        try {
-                                          var res =
-                                              await apiApi().DeleteAddress({
-                                            'addressId': address['_id'],
-                                          });
+                              //         if (confirm == true) {
+                              //           try {
+                              //             var res =
+                              //                 await apiApi().DeleteAddress({
+                              //               'addressId': address['_id'],
+                              //             });
 
-                                          print('DeleteAddress response: $res');
-                                          if (res['status'] == 'OK') {
-                                            setState(() {
-                                              userAddresses!.removeAt(index);
-                                              if (_selectedAddressId ==
-                                                  address['_id']) {
-                                                _selectedAddressId = null;
-                                              }
-                                              // Update parent after deletion
-                                              _updateSelectedAddress();
-                                            });
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                content: Text(res['message'] ??
-                                                    'Address deleted'),
-                                                backgroundColor: Colors.green,
-                                              ),
-                                            );
-                                          } else {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                content: Text(res['message'] ??
-                                                    'Failed to delete'),
-                                                backgroundColor: Colors.red,
-                                              ),
-                                            );
-                                          }
-                                        } catch (e) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                  'An error occurred while deleting the address'),
-                                              backgroundColor: Colors.red,
-                                            ),
-                                          );
-                                        }
-                                      }
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 6),
-                                      decoration: BoxDecoration(
-                                        color: Colors.red[50],
-                                        borderRadius: BorderRadius.circular(6),
-                                        border:
-                                            Border.all(color: Colors.red[300]!),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.delete,
-                                              size: 16, color: Colors.red),
-                                          const SizedBox(width: 4),
-                                          const Text(
-                                            'Delete',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.red,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              //             print('DeleteAddress response: $res');
+                              //             if (res['status'] == 'OK') {
+                              //               setState(() {
+                              //                 userAddresses!.removeAt(index);
+                              //                 if (_selectedAddressId ==
+                              //                     address['_id']) {
+                              //                   _selectedAddressId = null;
+                              //                 }
+                              //                 // Update parent after deletion
+                              //                 _updateSelectedAddress();
+                              //               });
+                              //               ScaffoldMessenger.of(context)
+                              //                   .showSnackBar(
+                              //                 SnackBar(
+                              //                   content: Text(res['message'] ??
+                              //                       'Address deleted'),
+                              //                   backgroundColor: Colors.green,
+                              //                 ),
+                              //               );
+                              //             } else {
+                              //               ScaffoldMessenger.of(context)
+                              //                   .showSnackBar(
+                              //                 SnackBar(
+                              //                   content: Text(res['message'] ??
+                              //                       'Failed to delete'),
+                              //                   backgroundColor: Colors.red,
+                              //                 ),
+                              //               );
+                              //             }
+                              //           } catch (e) {
+                              //             ScaffoldMessenger.of(context)
+                              //                 .showSnackBar(
+                              //               const SnackBar(
+                              //                 content: Text(
+                              //                     'An error occurred while deleting the address'),
+                              //                 backgroundColor: Colors.red,
+                              //               ),
+                              //             );
+                              //           }
+                              //         }
+                              //       },
+                              //       child: Container(
+                              //         padding: const EdgeInsets.symmetric(
+                              //             horizontal: 10, vertical: 6),
+                              //         decoration: BoxDecoration(
+                              //           color: Colors.red[50],
+                              //           borderRadius: BorderRadius.circular(6),
+                              //           border:
+                              //               Border.all(color: Colors.red[300]!),
+                              //         ),
+                              //         child: Row(
+                              //           children: [
+                              //             Icon(Icons.delete,
+                              //                 size: 16, color: Colors.red),
+                              //             const SizedBox(width: 4),
+                              //             const Text(
+                              //               'Delete',
+                              //               style: TextStyle(
+                              //                 fontSize: 12,
+                              //                 fontWeight: FontWeight.bold,
+                              //                 color: Colors.red,
+                              //               ),
+                              //             ),
+                              //           ],
+                              //         ),
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
                             ],
                           ),
                         ),

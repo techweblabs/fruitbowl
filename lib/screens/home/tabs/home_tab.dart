@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_starter_kit/screens/CheckBMIScreen/check_bmi_screen.dart';
+import 'package:flutter_starter_kit/screens/CheckBMIScreen/components/check_bmi_screen_body.dart';
 import 'package:flutter_starter_kit/screens/ProfielScreen/components/bmi_card.dart';
 import 'package:flutter_starter_kit/screens/home/home_screen.dart';
 import 'package:provider/provider.dart';
@@ -133,7 +134,7 @@ class _HomeTabState extends State<HomeTab> {
                                   final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => CheckBMI()),
+                                        builder: (context) => CheckBMIBody()),
                                   );
                                   if (result == true) {
                                     Navigator.push(
@@ -152,7 +153,7 @@ class _HomeTabState extends State<HomeTab> {
                                   final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => CheckBMI()),
+                                        builder: (context) => CheckBMIBody()),
                                   );
                                   if (result == true) {
                                     Navigator.push(

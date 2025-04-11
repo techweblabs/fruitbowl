@@ -63,6 +63,7 @@ class apiApi {
       final result =
           await _api.typePost(ApiConstants.CHECK_BMI, params, headers: headers);
       print('URL >>>>>>>${ApiConstants.CHECK_BMI}');
+      print("Authcode>>>>>>>>$headers");
 
       return result;
     } catch (e) {
@@ -79,8 +80,7 @@ class apiApi {
         'Content-Type': 'application/json',
       };
       log("$authCode");
-      print('URL >>>>>>>${ApiConstants.ADD_ADDRESS}');
-      print("params >>>>>>>>>>>>>$params");
+   
 
       final result = await _api.typePost(ApiConstants.ADD_ADDRESS, params,
           headers: headers);
@@ -99,7 +99,7 @@ class apiApi {
         'Content-Type': 'application/json',
       };
       log("$authCode");
-      print('URL >>>>>>>${ApiConstants.GET_ADDRESS}');
+      
       final result =
           await _api.typeGet(ApiConstants.GET_ADDRESS, headers: headers);
       return result;

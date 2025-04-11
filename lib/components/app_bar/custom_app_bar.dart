@@ -17,22 +17,59 @@ class CustomAppBar extends StatefulWidget {
   State<CustomAppBar> createState() => _CustomAppBarState();
 }
 
-class _CustomAppBarState extends State<CustomAppBar> {
-  String location = ''; // Moved inside the state
+class _CustomAppBarState extends State<CustomAppBar>
+    with WidgetsBindingObserver {
+  String location = ''; // Storage for current location
 
   @override
   void initState() {
     super.initState();
-    // No need for Future.delayed; you can call the async function directly
+    WidgetsBinding.instance.addObserver(this);
+    _loadLocation();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Reload location when app is resumed
+      _loadLocation();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // This will ensure location is reloaded when returning from other screens
     _loadLocation();
   }
 
   Future<void> _loadLocation() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    // Use setState to update the location so the widget rebuilds immediately
-    setState(() {
-      location = prefs.getString('location') ?? '';
-    });
+    final savedLocation = prefs.getString('location') ?? '';
+
+    if (mounted) {
+      setState(() {
+        location = savedLocation;
+      });
+    }
+  }
+
+  // This function will save the location when it's changed
+  Future<void> _saveLocation(String newLocation) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('location', newLocation);
+
+    if (mounted) {
+      setState(() {
+        location = newLocation;
+      });
+    }
   }
 
   @override
@@ -42,7 +79,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
       children: [
         // Location icon and address
         LocationWidget(
-          location: location,
+          initialLocation: location,
+          onLocationChanged: (newLocation) {
+            // Save the new location when it's selected in the LocationWidget
+            _saveLocation(newLocation);
+          },
         ),
         // Right icons
         Row(
@@ -51,12 +92,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
             _buildIconContainer(
               icon: Icons.person,
               onTap: () {
+                // Save the current location before navigating
+                _saveLocation(location);
+
                 Twl.navigateToScreenAnimated(
                     const HomeScreen(
                       initialIndex: 3,
                     ),
                     context: context);
-                // Handle profile
               },
             ),
           ],
