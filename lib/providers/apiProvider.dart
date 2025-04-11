@@ -379,7 +379,7 @@ class apiProvider with ChangeNotifier {
     }
   }
 
-  Future<void> AddAddress() async {
+  Future<void> AddAddress(BuildContext context) async {
     try {
       final params = {
         'addressType': _addressType,
@@ -395,12 +395,36 @@ class apiProvider with ChangeNotifier {
         'latitude': _latitude,
         'longitude': _longitude,
       };
+
       print("params ........................$params");
 
       final response = await apiApi().AddAddress(params);
       print(response);
+
+      if (response['status'] == 'OK') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message'] ?? 'Addres added successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context, response);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message'] ?? 'Failed to update address'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } catch (e) {
-      print('Error>>>>>>>>>>>>>>>>>>>>>: $e');
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred:>>>>>>>>>>>>>>>> $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -426,12 +450,11 @@ class apiProvider with ChangeNotifier {
     }
   }
 
-  Future<void> UpdateAddress() async {
+  Future<void> UpdateAddress(BuildContext context) async {
     try {
       final params = {
         'addressId': _addressId,
         'userId': _userId,
-        'addressType': _addressType,
         'fullAddress': _fullAddress,
         'flatNumber': _flatNumber,
         'landmark': _landmark,
@@ -439,16 +462,42 @@ class apiProvider with ChangeNotifier {
         'city': _city,
         'state': _state,
         'pincode': _pincode,
+        'addressType': _addressType,
         'isDefault': _isDefault,
-        'status': _status,
         'latitude': _latitude,
         'longitude': _longitude,
         'deliveryPreference': _deliveryPreference,
+        'status': _status,
       };
+
       final response = await apiApi().UpdateAddress(params);
       print(response);
+
+      if (response['status'] == 'OK') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text(response['message'] ?? 'Address updated successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context, response);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message'] ?? 'Failed to update address'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } catch (e) {
       print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred:>>>>>>>>>>>>>>>> $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 }

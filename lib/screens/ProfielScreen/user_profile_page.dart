@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_starter_kit/apiServices/apiApi.dart';
 import 'package:flutter_starter_kit/screens/AddressScreen/components/add_address_page.dart';
+import 'package:flutter_starter_kit/screens/CheckBMIScreen/components/check_bmi_screen_body.dart';
 import 'package:flutter_starter_kit/screens/CheckoutScreen/components/edit_address.dart';
 import 'package:flutter_starter_kit/screens/MyOrdersScreen/my_orders_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -121,16 +122,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFFE0F7FA), // Light cyan/teal
-              const Color(0xFFE8F5E9), // Light mint green
-              const Color(0xFFE3F2FD), // Light blue
+              Color(0xFFB2EBF2), // Medium light cyan
+              Color.fromARGB(255, 187, 214, 188), // Soft green
+              Color(0xFF90CAF9), // Light steel blue
             ],
-            stops: const [0.0, 0.5, 1.0],
+            stops: [0.0, 0.5, 1.0],
           ),
         ),
         child: SafeArea(
@@ -145,8 +146,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 // BMI and Health metrics
                 GestureDetector(
                   onTap: () async {
-                    final result = await Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => CheckBMI()));
+                    final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CheckBMIBody()));
                     if (result == true) {
                       // print('setting state');
                       // loadCheckBMI();
@@ -899,7 +902,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.black, width: 2),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black,
+                              offset: Offset(4, 4),
+                            ),
+                          ],
                         ),
                         child: const Center(
                           child: Text(
@@ -925,7 +933,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         decoration: BoxDecoration(
                           color: Colors.red[300],
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.black, width: 2),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black,
+                              offset: Offset(4, 4),
+                            ),
+                          ],
                         ),
                         child: const Center(
                           child: Text(

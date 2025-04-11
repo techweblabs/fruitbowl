@@ -18,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  var username;
+  String username = "";
   UserProfile? userProfile;
 
   @override

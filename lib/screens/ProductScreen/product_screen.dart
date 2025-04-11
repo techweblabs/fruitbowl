@@ -5,7 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../CheckoutScreen/checkout_screen.dart';
 
 class ProductScreen extends StatefulWidget {
-  const ProductScreen({super.key});
+    final int initialIndex;
+  const ProductScreen({super.key, this.initialIndex = 0});
 
   @override
   State<ProductScreen> createState() => _HorizontalProductScreenState();

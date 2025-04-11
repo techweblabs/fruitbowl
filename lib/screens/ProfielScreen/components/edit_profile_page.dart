@@ -72,9 +72,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(0xFFE0F7FA), // Light cyan/teal
-                  Color(0xFFE8F5E9), // Light mint green
-                  Color(0xFFE3F2FD), // Light blue
+                  Color(0xFFB2EBF2), // Medium light cyan
+                  Color.fromARGB(255, 187, 214, 188), // Soft green
+                  Color(0xFF90CAF9), // Light steel blue
                 ],
                 stops: [0.0, 0.5, 1.0],
               ),
@@ -91,7 +91,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // _buildProfileImageSection(),
+                            //_buildProfileImageSection(),
                             // const SizedBox(height: 24),
                             _buildPersonalInfoSection(),
                             const SizedBox(height: 24),
@@ -638,7 +638,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
         'name': _nameController.text,
         'email': _emailController.text,
         'phoneNumber': _phoneController.text,
-        'gender': _selectedGender == "Male" ? 1 : 2,
+        'gender': _selectedGender == "Male"
+            ? 1
+            : _selectedGender == "Female"
+                ? 2
+                : 3,
         'height': _heightController.text,
         'weight': _weightController.text,
         'age': _ageController.text,
@@ -649,7 +653,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       Provider.of<apiProvider>(context, listen: false).email =
           _emailController.text;
       Provider.of<apiProvider>(context, listen: false).gender =
-          _selectedGender == "Male" ? 1 : 2;
+          _selectedGender == "Male"
+              ? 1
+              : _selectedGender == "Female"
+                  ? 2
+                  : 3;
 
       Provider.of<apiProvider>(context, listen: false).height =
           _heightController.text;

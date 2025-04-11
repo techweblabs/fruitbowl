@@ -460,25 +460,7 @@ class _LocationPickerPageState extends State<AddAddressPage> {
   void _saveAddress() {
     if (_formKey.currentState!.validate()) {
       final varpro = Provider.of<apiProvider>(context, listen: false);
-      // Create address model
-      // final AddressModel address = AddressModel(
-      //   id: DateTime.now().millisecondsSinceEpoch.toString(),
-      //   title: _addressType, // Use addressType as the title
-      //   fullAddress:
-      //       '${_houseNumberController.text}, ${_streetController.text}, ${_cityController.text}, ${_stateController.text} ${_zipCodeController.text}',
-      //   streetAddress: _streetController.text,
-      //   houseNumber: _houseNumberController.text,
-      //   apartment: _apartmentController.text,
-      //   landmark: _landmarkController.text,
-      //   city: _cityController.text,
-      //   state: _stateController.text,
-      //   zipCode: _zipCodeController.text,
-      //   latitude: _currentPosition.latitude,
-      //   longitude: _currentPosition.longitude,
-      //   addressType: _addressType,
-      // );
 
-// Assign all values using your controllers and current location
       varpro.addressType =
           _addressType; // Assuming this is a TextEditingController
       varpro.fullAddress =
@@ -500,7 +482,7 @@ class _LocationPickerPageState extends State<AddAddressPage> {
           _isDefaultAddress.toString(); // Converted to string for consistency
       varpro.longitude = _currentPosition.longitude.toString();
 
-      varpro.AddAddress(); // Same here
+      varpro.AddAddress(context); // Same here
 
 // If needed, trigger API call or any logic after setting the values
 
@@ -508,27 +490,6 @@ class _LocationPickerPageState extends State<AddAddressPage> {
       //  print(address.toJson());
 
       // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Container(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                SizedBox(width: 8),
-                Text("Address saved successfully"),
-              ],
-            ),
-          ),
-          backgroundColor: Colors.green[700],
-          duration: const Duration(seconds: 2),
-        ),
-      );
-
-      // Navigate back
-      Future.delayed(const Duration(seconds: 2), () {
-        Navigator.pop(context);
-      });
     }
   }
 
@@ -556,9 +517,9 @@ class _LocationPickerPageState extends State<AddAddressPage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFFE0F7FA), // Light cyan/teal
-              Color(0xFFE8F5E9), // Light mint green
-              Color(0xFFE3F2FD), // Light blue
+              Color(0xFFB2EBF2), // Medium light cyan
+              Color.fromARGB(255, 187, 214, 188), // Soft green
+              Color(0xFF90CAF9), // Light steel blue
             ],
             stops: [0.0, 0.5, 1.0],
           ),
@@ -819,7 +780,7 @@ class _LocationPickerPageState extends State<AddAddressPage> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: Colors.red,
+          color: Colors.green,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.black, width: 2),
           boxShadow: const [
@@ -1283,12 +1244,12 @@ class _LocationPickerPageState extends State<AddAddressPage> {
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(vertical: 8),
                 ),
-                // validator: (value) {
-                //   if (value == null || value.isEmpty) {
-                //     return "Please enter flatnumber";
-                //   }
-                //   return null;
-                // },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter flatnumber";
+                  }
+                  return null;
+                },
               ),
             ),
             const SizedBox(height: 24),

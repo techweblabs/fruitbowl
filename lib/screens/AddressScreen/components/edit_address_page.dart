@@ -305,27 +305,7 @@ class _EditAddressPageState extends State<EditAddressPage> {
       print(updatedAddress.toJson());
 
       // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Container(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                SizedBox(width: 8),
-                Text("Address updated successfully"),
-              ],
-            ),
-          ),
-          backgroundColor: Colors.green[700],
-          duration: const Duration(seconds: 2),
-        ),
-      );
-
-      // Navigate back with updated address
-      Future.delayed(const Duration(seconds: 2), () {
-        Navigator.pop(context, updatedAddress);
-      });
+      
     }
   }
 
