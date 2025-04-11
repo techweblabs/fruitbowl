@@ -117,7 +117,9 @@ class _OrdersPageState extends State<OrdersPage> {
         elevation: 0,
         leading: GestureDetector(
           onTap: () {
-            Twl.navigateToScreenClearStack(const HomeTab(username: 'Srinadh'));
+            Twl.navigateToScreenClearStack(const HomeScreen(
+              initialIndex: 0,
+            ));
           },
           child: Container(
             margin: const EdgeInsets.all(8),

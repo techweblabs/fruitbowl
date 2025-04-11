@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart'; // Import Firebase Core
 import 'package:flutter/services.dart';
 import 'package:flutter_starter_kit/providers/apiProvider.dart';
+import 'package:flutter_starter_kit/providers/firestore_api_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
           providers: [
             ChangeNotifierProvider(create: (context) => ThemeProvider()),
             ChangeNotifierProvider(create: (_) => apiProvider()),
+            ChangeNotifierProvider(create: (_) => FirestoreApiProvider()),
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {

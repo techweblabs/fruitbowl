@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/providers/firestore_api_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../apiServices/apiApi.dart';
 import '../screens/BasicDetailsScreen/basic_details_screen.dart';
@@ -194,11 +196,15 @@ class apiProvider with ChangeNotifier {
   }
 
   Future SendOtp() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       final params = {
         'contactNo': _contactNo,
       };
       final response = await apiApi().SendOtp(params);
+      if (response['status'] == "OK") {
+        prefs.setString('contactNo', _contactNo);
+      }
       print(response);
       sessionCode = response['details'];
       return response;
@@ -275,7 +281,7 @@ class apiProvider with ChangeNotifier {
           weight: double.tryParse(prefs.getString('weight').toString()) ?? 0,
           height: double.tryParse(prefs.getString('height').toString()) ?? 0,
         );
-        CheckBmi();
+        CheckBmi(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Container(
@@ -316,7 +322,8 @@ class apiProvider with ChangeNotifier {
     }
   }
 
-  Future CheckBmi() async {
+  Future CheckBmi(BuildContext context) async {
+    var pro = Provider.of<FirestoreApiProvider>(context, listen: false);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     try {
@@ -371,6 +378,9 @@ class apiProvider with ChangeNotifier {
           weight: double.tryParse(prefs.getString('weight').toString()) ?? 0,
           height: double.tryParse(prefs.getString('height').toString()) ?? 0,
         );
+
+        await pro.fetchFruitBowls();
+        await pro.fetchrecommededfruitbowls();
       }
       print(response);
       return response;

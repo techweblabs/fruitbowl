@@ -298,9 +298,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
           ),
           const SizedBox(height: 20),
-
           // Name field
           _buildTextField(
+            readonly: false,
             controller: _nameController,
             label: "Full Name",
             icon: Icons.person,
@@ -315,6 +315,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
           // Email field
           _buildTextField(
+            readonly: true,
             controller: _emailController,
             label: "Email",
             icon: Icons.email,
@@ -333,6 +334,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
           // Phone field
           _buildTextField(
+            readonly: true,
             controller: _phoneController,
             label: "Phone Number",
             icon: Icons.phone,
@@ -396,6 +398,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
           // Age field
           _buildTextField(
+            readonly: false,
             controller: _ageController,
             label: "Age",
             icon: Icons.cake,
@@ -418,6 +421,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               // Height field
               Expanded(
                 child: _buildTextField(
+                  readonly: false,
                   controller: _heightController,
                   label: "Height (cm)",
                   icon: Icons.height,
@@ -438,6 +442,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               // Weight field
               Expanded(
                 child: _buildTextField(
+                  readonly: false,
                   controller: _weightController,
                   label: "Weight (kg)",
                   icon: Icons.monitor_weight,
@@ -501,6 +506,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Widget _buildTextField({
+    required bool readonly,
     required TextEditingController controller,
     required String label,
     required IconData icon,
@@ -528,6 +534,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ],
           ),
           child: TextFormField(
+            readOnly: readonly,
             controller: controller,
             keyboardType: keyboardType,
             validator: validator,
@@ -650,7 +657,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           _emailController.text;
       Provider.of<apiProvider>(context, listen: false).gender =
           _selectedGender == "Male" ? 1 : 2;
-
       Provider.of<apiProvider>(context, listen: false).height =
           _heightController.text;
       Provider.of<apiProvider>(context, listen: false).weight =

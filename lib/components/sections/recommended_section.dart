@@ -43,7 +43,10 @@ class RecommendedSection extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: fruitBowls.length,
               itemBuilder: (context, index) {
-                return FruitBowlCard(bowl: fruitBowls[index]);
+                return FruitBowlCard(
+                  bowl: fruitBowls[index],
+                  index: index,
+                );
               },
             ),
           ),

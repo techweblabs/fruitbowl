@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_starter_kit/screens/home/home_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
+
+import '../../../providers/firestore_api_provider.dart';
 
 class LocationFetchScreenBody extends StatefulWidget {
   @override
@@ -20,6 +23,7 @@ class _LocationFetchScreenBodyState extends State<LocationFetchScreenBody>
   @override
   void initState() {
     super.initState();
+    loadfirestoreapidata();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -33,6 +37,12 @@ class _LocationFetchScreenBodyState extends State<LocationFetchScreenBody>
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  void loadfirestoreapidata() async {
+    var pro = Provider.of<FirestoreApiProvider>(context, listen: false);
+    await pro.fetchFruitBowls();
+    await pro.fetchrecommededfruitbowls();
   }
 
   Future<void> _determinePosition() async {

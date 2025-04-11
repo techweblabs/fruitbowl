@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 import '../../../components/decorations/background_painters.dart';
 import '../../../components/decorations/doodle_painters.dart';
 import '../../../providers/apiProvider.dart';
+import '../../../providers/firestore_api_provider.dart';
 import '../../ProfielScreen/components/bmi_card.dart';
 import '../../ProfielScreen/models/user_profile.dart';
 // Update the import to match your project structure.
@@ -314,6 +315,8 @@ class _CheckBMIBodyState extends State<CheckBMIBody>
                       builder: (context, child) {
                         return GestureDetector(
                           onTap: () async {
+                            var pro = Provider.of<FirestoreApiProvider>(context,
+                                listen: false);
                             setState(() {
                               _isCalculating = true;
                             });
@@ -330,7 +333,7 @@ class _CheckBMIBodyState extends State<CheckBMIBody>
 
                             try {
                               // Execute the BMI check.
-                              var result = await apiProv.CheckBmi();
+                              var result = await apiProv.CheckBmi(context);
 
                               // Validate the result.
                               if (result == null ||
@@ -344,6 +347,7 @@ class _CheckBMIBodyState extends State<CheckBMIBody>
                                   ),
                                 );
                               } else if (result['status'] == "OK") {
+                              
                                 // Handle the successful response.
                                 setState(() {
                                   bmiResult = result['details']['BMI'];

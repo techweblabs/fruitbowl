@@ -18,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  var username;
+  String username = "";
   UserProfile? userProfile;
 
   @override
@@ -30,19 +30,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> loadCheckBMI() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      username = prefs.getString('name').toString();
+      username = prefs.getString('name') ?? "";
     });
 
     userProfile = UserProfile(
       age: prefs.getInt("age") ?? 1,
       phoneNumber: prefs.getString("contactNo") ?? "",
-      name: prefs.getString('name').toString(),
-      email: prefs.getString('email').toString(),
-      profileImage: prefs.getString('profileimage').toString(),
-      gender: prefs.getString('gender').toString(),
-      bmi: double.tryParse(prefs.getString('BMI').toString()) ?? 0,
-      weight: double.tryParse(prefs.getString('weight').toString()) ?? 0,
-      height: double.tryParse(prefs.getString('height').toString()) ?? 0,
+      name: prefs.getString('name') ?? "",
+      email: prefs.getString('email') ?? "",
+      profileImage: prefs.getString('profileimage') ?? "",
+      gender: prefs.getString('gender') ?? "",
+      bmi: double.tryParse(prefs.getString('BMI') ?? "0") ?? 0,
+      weight: double.tryParse(prefs.getString('weight') ?? "0") ?? 0,
+      height: double.tryParse(prefs.getString('height') ?? "0") ?? 0,
     );
   }
 

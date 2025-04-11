@@ -1,11 +1,11 @@
 // lib/profile/basic_details.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_starter_kit/screens/LocationFetchScreen/location_fetch_screen.dart';
-import 'package:flutter_starter_kit/screens/home/home_screen.dart';
 import 'package:flutter_starter_kit/utils/brutal_decoration.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../providers/apiProvider.dart';
 
 class BasicDetailsBody extends StatefulWidget {
@@ -31,18 +31,27 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
   final double _bmi = 0.0;
   final String _bmiCategory = "N/A";
   final Color _bmiColor = Colors.black;
+  String contactno = "";
 
   @override
   void initState() {
     super.initState();
+    loadcontactno();
     // All fields are empty by default.
-    _nameController = TextEditingController(text: "");
-    _emailController = TextEditingController(text: "");
-    _phoneController = TextEditingController(text: "");
-    _ageController = TextEditingController(text: "");
-    _selectedGender = "Male"; // default gender
-    _heightController = TextEditingController(text: "");
-    _weightController = TextEditingController(text: "");
+  }
+
+  loadcontactno() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      contactno = prefs.getString('contactNo') ?? "";
+      _nameController = TextEditingController(text: "");
+      _emailController = TextEditingController(text: "");
+      _phoneController = TextEditingController(text: contactno);
+      _ageController = TextEditingController(text: "");
+      _selectedGender = "Male"; // default gender
+      _heightController = TextEditingController(text: "");
+      _weightController = TextEditingController(text: "");
+    });
   }
 
   @override
@@ -287,6 +296,7 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
           ),
           const SizedBox(height: 20),
           _buildTextField(
+            readonly: false,
             controller: _nameController,
             label: "Full Name",
             icon: Icons.person,
@@ -299,6 +309,7 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
           ),
           const SizedBox(height: 16),
           _buildTextField(
+            readonly: false,
             controller: _emailController,
             label: "Email",
             icon: Icons.email,
@@ -315,6 +326,7 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
           ),
           const SizedBox(height: 16),
           _buildTextField(
+            readonly: true,
             controller: _phoneController,
             label: "Phone Number",
             icon: Icons.phone,
@@ -374,6 +386,7 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
           ),
           const SizedBox(height: 20),
           _buildTextField(
+            readonly: false,
             controller: _ageController,
             label: "Age",
             icon: Icons.cake,
@@ -393,6 +406,7 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
             children: [
               Expanded(
                 child: _buildTextField(
+                  readonly: false,
                   controller: _heightController,
                   label: "Height (cm)",
                   icon: Icons.height,
@@ -411,6 +425,7 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildTextField(
+                  readonly: false,
                   controller: _weightController,
                   label: "Weight (kg)",
                   icon: Icons.monitor_weight,
@@ -471,6 +486,7 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
   }
 
   Widget _buildTextField({
+    required bool readonly,
     required TextEditingController controller,
     required String label,
     required IconData icon,
@@ -498,6 +514,7 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
             ],
           ),
           child: TextFormField(
+            readOnly: readonly,
             controller: controller,
             keyboardType: keyboardType,
             validator: validator,

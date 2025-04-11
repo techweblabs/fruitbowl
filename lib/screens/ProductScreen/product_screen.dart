@@ -1,221 +1,57 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/providers/firestore_api_provider.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../CheckoutScreen/checkout_screen.dart';
 
 class ProductScreen extends StatefulWidget {
-  const ProductScreen({super.key});
+  final int initialPage;
+
+  const ProductScreen({super.key, this.initialPage = 0});
 
   @override
   State<ProductScreen> createState() => _HorizontalProductScreenState();
 }
 
 class _HorizontalProductScreenState extends State<ProductScreen> {
-  // Page controller for the horizontal PageView
-  final PageController _pageController = PageController(
-    viewportFraction: 1.0, // Full width pages
-    initialPage: 0,
-  );
+  // Declare _pageController as late so it can be initialized in initState
+  late final PageController _pageController;
+
   bool _showSwipeHint = true;
-  // Current page indicator
   int _currentPage = 0;
-
-  // Selected plan index (default: 1 - the middle plan)
   int _selectedPlanIndex = 0;
+  bool _isLoading = true; // Added loading flag
+  // Sample product data remains unchanged.
+  List<Map<String, dynamic>> _products = [];
 
-  // Sample product data
-  final List<Map<String, dynamic>> _products = [
-    {
-      'name': 'Large Bowl',
-      'description': 'Medium Bowl • 400g',
-      'price': '₹89',
-      'plans': [
-        {'days': 7, 'price': '₹623', 'savings': '0%'},
-        {'days': 15, 'price': '₹1,246', 'savings': '7%'},
-        {'days': 30, 'price': '₹2,314', 'savings': '13%'},
-      ],
-      'backgroundImage': 'assets/images/fruits.png',
-      'calories': '320 kcal',
-      'weight': '400g',
-      'ingredients': [
-        {'name': '🍍 Pineapple', 'qty': '120g'},
-        {'name': '🫐 Blueberries', 'qty': '60g'},
-        {'name': '🥝 Kiwi', 'qty': '50g'},
-        {'name': '🍓 Raspberries', 'qty': '70g'},
-        {'name': '🍈 Papaya Cubes', 'qty': '100g'},
-      ],
-      'benefits': [
-        'Low in calories, high in fiber',
-        'Boosts metabolism',
-        'Keeps you full longer',
-        'Packed with antioxidants',
-        'No added sugar or preservatives',
-      ],
-      'gradientColors': [
-        const Color(0xFF8ECAE6),
-        const Color(0xFF219EBC),
-        const Color(0xFF023047),
-      ],
-    },
-    {
-      'name': 'Energy Protein Bowl',
-      'description': 'Large Bowl • 450g',
-      'price': '₹119',
-      'plans': [
-        {'days': 7, 'price': '₹833', 'savings': '0%'},
-        {'days': 15, 'price': '₹1,666', 'savings': '7%'},
-        {'days': 30, 'price': '₹3,094', 'savings': '13%'},
-      ],
-      'backgroundImage': 'assets/images/protein.png',
-      'calories': '450 kcal',
-      'weight': '450g',
-      'ingredients': [
-        {'name': '🥜 Mixed Nuts', 'qty': '100g'},
-        {'name': '🥣 Greek Yogurt', 'qty': '150g'},
-        {'name': '🍌 Banana', 'qty': '80g'},
-        {'name': '🍯 Honey', 'qty': '20g'},
-        {'name': '🫐 Berries', 'qty': '100g'},
-      ],
-      'benefits': [
-        'High protein content',
-        'Sustained energy release',
-        'Muscle recovery support',
-        'Rich in healthy fats',
-        'Natural sweetness',
-      ],
-      'gradientColors': [
-        const Color(0xFFF4A261),
-        const Color(0xFFE76F51),
-        const Color(0xFF264653),
-      ],
-    },
-    {
-      'name': 'Detox Green Bowl',
-      'description': 'Small Bowl • 350g',
-      'price': '₹99',
-      'plans': [
-        {'days': 7, 'price': '₹693', 'savings': '0%'},
-        {'days': 15, 'price': '₹1,386', 'savings': '7%'},
-        {'days': 30, 'price': '₹2,574', 'savings': '13%'},
-      ],
-      'backgroundImage': 'assets/images/greens.png',
-      'calories': '210 kcal',
-      'weight': '350g',
-      'ingredients': [
-        {'name': '🥬 Kale', 'qty': '80g'},
-        {'name': '🥒 Cucumber', 'qty': '70g'},
-        {'name': '🍏 Green Apple', 'qty': '100g'},
-        {'name': '🥑 Avocado', 'qty': '50g'},
-        {'name': '🍋 Lemon Juice', 'qty': '15ml'},
-      ],
-      'benefits': [
-        'Detoxifies the body',
-        'Improves digestion',
-        'Rich in vitamins and minerals',
-        'Hydrating ingredients',
-        'Supports immune system',
-      ],
-      'gradientColors': [
-        const Color(0xFF2A9D8F),
-        const Color(0xFF43AA8B),
-        const Color(0xFF264653),
-      ],
-    },
-  ];
-
-  Future<void> fetchFruitBowls() async {
-    final sizesSnapshot = await FirebaseFirestore.instance
-        .collection('fruitBowls')
-        .doc('obese')
-        .collection('sizes')
-        .get();
-
-    for (final sizeDoc in sizesSnapshot.docs) {
-      final sizeData = sizeDoc.data() as Map<String, dynamic>;
-      final sizeName = sizeDoc.id; // small, medium, large
-
-      // Extract dailyPrice and weight
-      final dailyPrice = (sizeData['dailyPrice'] is num)
-          ? (sizeData['dailyPrice'] as num).toDouble()
-          : double.tryParse(sizeData['dailyPrice']?.toString() ?? '0') ?? 0.0;
-      final weight = (sizeData['weight'] is num)
-          ? (sizeData['weight'] as num).toDouble()
-          : double.tryParse(sizeData['weight']?.toString() ?? '0') ?? 0.0;
-
-      // Extract discount map
-      final discountMap = (sizeData['discount'] as Map<dynamic, dynamic>?)
-              ?.map<String, int>(
-            (key, value) =>
-                MapEntry(key.toString(), int.tryParse(value.toString()) ?? 0),
-          ) ??
-          <String, int>{};
-
-      // Fetch items data (calories and ingredients)
-      final itemsSnapshot = await sizeDoc.reference.collection('items').get();
-      int totalCalories = 0;
-      List<Map<String, dynamic>> ingredients = []; // New list for ingredients
-
-      for (final itemDoc in itemsSnapshot.docs) {
-        final itemData = itemDoc.data();
-
-        // Calculate total calories
-        final itemCalories = (itemData['calories'] is num)
-            ? (itemData['calories'] as num).toInt()
-            : int.tryParse(itemData['calories']?.toString() ?? '0') ?? 0;
-        totalCalories += itemCalories;
-
-        // Extract ingredient data
-        ingredients.add({
-          'name': itemData['name']?.toString() ?? 'Unknown',
-          'qty': "${itemData['qty']?.toString()}g" ??
-              '0g', // Ensure format like "15g"
-        });
+  initializeData() async {
+    var pro = Provider.of<FirestoreApiProvider>(context, listen: false);
+    setState(() {
+      if (pro.products != null || pro.products != '') {
+        _products = pro.products;
       }
-      setState(() {
-        for (var product in _products) {
-          if (product['description'] != null &&
-              product['description']
-                  .toString()
-                  .toLowerCase()
-                  .contains(sizeName)) {
-            // Update basic fields
-            product['calories'] = '$totalCalories kcal';
-            product['price'] = '₹${dailyPrice.round()}';
-            product['weight'] = '${weight.round()}g';
-            product['name'] = '$sizeName Bowl';
-            // Update ingredients list
-            product['ingredients'] = ingredients; // Replace hardcoded data
-            // Generate discount plans (existing logic)
-            List<Map<String, dynamic>> newPlans = [];
-            discountMap.forEach((daysStr, discountPercent) {
-              int days = int.tryParse(daysStr) ?? 0;
-              if (days > 0 && discountPercent > 0) {
-                double total = dailyPrice * days;
-                double discountedPrice = total * (1 - discountPercent / 100);
-                newPlans.add({
-                  'days': days,
-                  'price': '₹${discountedPrice.round()}',
-                  'savings': '$discountPercent%',
-                });
-              }
-            });
-            newPlans.sort((a, b) => a['days'].compareTo(b['days']));
-            product['plans'] = newPlans;
-            product['description'] = sizeData['description'];
-
-            break;
-          }
-        }
-      });
-      // Update matching product
-    }
+    });
+    setState(() {
+      _isLoading = false;
+    });
+    // await fetchFruitBowls();
+    // Update the loading flag once data is ready
   }
 
   @override
   void initState() {
     super.initState();
-    fetchFruitBowls();
+    // Initialize PageController using the widget's initialPage
+    _pageController = PageController(
+      viewportFraction: 1.0,
+      initialPage: widget.initialPage,
+    );
+    // Set the current page to match the initialPage provided in the constructor.
+    _currentPage = widget.initialPage;
+
+    initializeData();
+
     _pageController.addListener(() {
       int next = _pageController.page!.round();
       if (_currentPage != next) {
@@ -234,10 +70,15 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Show a loading indicator until Firestore data is loaded.
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     return Scaffold(
       body: Stack(
         children: [
-          // Page view for horizontal scrolling
           PageView.builder(
             controller: _pageController,
             itemCount: _products.length,
@@ -245,8 +86,6 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
               return _buildProductPage(_products[index]);
             },
           ),
-
-          // Page indicators
           Positioned(
             bottom: 20,
             left: 0,
@@ -261,7 +100,6 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
           ),
         ],
       ),
-
       // Fixed Subscription Button at bottom
       bottomNavigationBar: Container(
         margin: const EdgeInsets.all(16),
@@ -471,16 +309,27 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
+                // Ingredients List with Header Integrated
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: _brutalDecoration(),
                     child: Column(
-                      children: product['ingredients']
-                          .map<Widget>((ingredient) =>
-                              _fruitRow(ingredient['name'], ingredient['qty']))
-                          .toList(),
+                      children: [
+                        _tableHeader(),
+                        const Divider(
+                          color: Colors.black,
+                          thickness: 1,
+                        ),
+                        ...product['ingredients']
+                            .map<Widget>((ingredient) => _foodRow(
+                                ingredient['name'],
+                                ingredient['qty'],
+                                ingredient['protein'],
+                                ingredient['calories']))
+                            .toList(),
+                      ],
                     ),
                   ),
                 ),
@@ -494,7 +343,6 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
             ),
           ),
         ),
-
         // Swipe Instructions
         if (_showSwipeHint)
           Positioned(
@@ -601,36 +449,103 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
     );
   }
 
-  // Fruit Row
-  Widget _fruitRow(String fruit, String qty) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+  // Header for the Ingredients table
+  Widget _tableHeader() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            fruit,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              shadows: [
-                Shadow(
-                  offset: Offset(0.5, 0.5),
-                  blurRadius: 0,
-                  color: Color(0x66000000),
-                ),
-              ],
+          Expanded(
+            flex: 3,
+            child: Text(
+              'Ingredients',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.left,
             ),
           ),
-          Text(
-            qty,
-            style: const TextStyle(
-              shadows: [
-                Shadow(
-                  offset: Offset(0.5, 0.5),
-                  blurRadius: 0,
-                  color: Color(0x66000000),
-                ),
-              ],
+          Expanded(
+            flex: 1,
+            child: Text(
+              'Qty',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              'Protein',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              'Calories',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Updated Food Row with aligned columns
+  Widget _foodRow(String food, String qty, String protein, String calories) {
+    const textStyle = TextStyle(
+      shadows: [
+        Shadow(
+          offset: Offset(0.5, 0.5),
+          blurRadius: 0,
+          color: Color(0x66000000),
+        ),
+      ],
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: Text(
+              food,
+              style: textStyle.copyWith(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.left,
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              qty,
+              style: textStyle,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              protein,
+              style: textStyle,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              calories,
+              style: textStyle,
+              textAlign: TextAlign.center,
             ),
           ),
         ],
@@ -775,13 +690,6 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              shadows: [
-                Shadow(
-                  offset: Offset(1, 1),
-                  blurRadius: 0,
-                  color: Color(0x88000000),
-                ),
-              ],
             ),
           ),
           const SizedBox(height: 8),
@@ -802,13 +710,6 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
           const Text("✨ Key Benefits:",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                shadows: [
-                  Shadow(
-                    offset: Offset(1, 1),
-                    blurRadius: 0,
-                    color: Color(0x88000000),
-                  ),
-                ],
               )),
           const SizedBox(height: 6),
           // Benefits list
@@ -831,3 +732,119 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
     );
   }
 }
+
+
+
+
+ // int _customSizeOrder(String sizeName) {
+  //   final lowerName = sizeName.toLowerCase();
+  //   if (lowerName.contains('large')) return 0;
+  //   if (lowerName.contains('medium')) return 1;
+  //   if (lowerName.contains('small')) return 2;
+  //   return 99;
+  // }
+
+  // Future<void> fetchFruitBowls() async {
+  //   if (_bmiString.isEmpty) {
+  //     print("BMI string is empty, skipping Firestore query");
+  //     return;
+  //   }
+
+  //   print("Using BMI: $_bmiString");
+  //   final sizesSnapshot = await FirebaseFirestore.instance
+  //       .collection('fruitBowls')
+  //       .doc(_bmiString)
+  //       .collection('sizes')
+  //       .get();
+
+  //   for (final sizeDoc in sizesSnapshot.docs) {
+  //     final sizeData = sizeDoc.data() as Map<String, dynamic>;
+  //     final sizeName = sizeDoc.id.toLowerCase();
+
+  //     final dailyPrice = (sizeData['dailyPrice'] is num)
+  //         ? (sizeData['dailyPrice'] as num).toDouble()
+  //         : double.tryParse(sizeData['dailyPrice']?.toString() ?? '0') ?? 0.0;
+  //     final weight = (sizeData['weight'] is num)
+  //         ? (sizeData['weight'] as num).toDouble()
+  //         : double.tryParse(sizeData['weight']?.toString() ?? '0') ?? 0.0;
+
+  //     final discountMap = (sizeData['discount'] as Map<dynamic, dynamic>?)
+  //             ?.map<String, int>(
+  //           (key, value) =>
+  //               MapEntry(key.toString(), int.tryParse(value.toString()) ?? 0),
+  //         ) ??
+  //         <String, int>{};
+
+  //     final itemsSnapshot = await sizeDoc.reference.collection('items').get();
+  //     int totalCalories = 0;
+  //     List<Map<String, dynamic>> ingredients = [];
+
+  //     for (final itemDoc in itemsSnapshot.docs) {
+  //       final itemData = itemDoc.data();
+  //       final itemCalories = (itemData['calories'] is num)
+  //           ? (itemData['calories'] as num).toInt()
+  //           : int.tryParse(itemData['calories']?.toString() ?? '0') ?? 0;
+  //       totalCalories += itemCalories;
+
+  //       final ingredientName = itemData['name']?.toString() ?? "Unknown";
+  //       final ingredientQty =
+  //           itemData['qty'] != null ? "${itemData['qty'].toString()}g" : "0g";
+  //       final ingredientProtein = itemData['protein'] != null
+  //           ? "${itemData['protein'].toString()}g"
+  //           : "0g";
+  //       final ingredientcalories = itemData['calories'] != null
+  //           ? "${itemData['calories'].toString()} kcal"
+  //           : "0 kcal";
+
+  //       ingredients.add({
+  //         'name': ingredientName,
+  //         'qty': ingredientQty,
+  //         'protein': ingredientProtein,
+  //         'calories': ingredientcalories
+  //       });
+  //     }
+
+  //     setState(() {
+  //       for (var product in _products) {
+  //         if (product['description'] != null &&
+  //             product['description']
+  //                 .toString()
+  //                 .toLowerCase()
+  //                 .contains(sizeName)) {
+  //           product['calories'] = '$totalCalories kcal';
+  //           product['price'] = '₹${dailyPrice.round()}';
+  //           product['weight'] = '${weight.round()}g';
+  //           product['name'] = '$sizeName Bowl';
+  //           print("size name >>>$sizeName");
+  //           product['ingredients'] = ingredients;
+
+  //           List<Map<String, dynamic>> newPlans = [];
+  //           discountMap.forEach((daysStr, discountPercent) {
+  //             int days = int.tryParse(daysStr) ?? 0;
+  //             if (days > 0 && discountPercent > 0) {
+  //               double total = dailyPrice * days;
+  //               double discountedPrice = total * (1 - discountPercent / 100);
+  //               newPlans.add({
+  //                 'days': days,
+  //                 'price': '₹${discountedPrice.round()}',
+  //                 'savings': '$discountPercent%',
+  //               });
+  //             }
+  //           });
+  //           newPlans.sort((a, b) => a['days'].compareTo(b['days']));
+  //           if (newPlans.isNotEmpty) {
+  //             product['plans'] = newPlans;
+  //           }
+  //           product['description'] = sizeData['description']?.toString() ?? '';
+  //           break;
+  //         }
+  //       }
+  //     });
+  //   }
+  //   setState(() {
+  //     _products.sort((a, b) {
+  //       return _customSizeOrder(a['name'])
+  //           .compareTo(_customSizeOrder(b['name']));
+  //     });
+  //   });
+  // }

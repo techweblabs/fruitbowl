@@ -8,6 +8,7 @@ import 'package:flutter_starter_kit/screens/CheckoutScreen/components/edit_addre
 import 'package:flutter_starter_kit/screens/MyOrdersScreen/my_orders_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
 import '../../utils/brutal_decoration.dart';
 import '../CheckBMIScreen/check_bmi_screen.dart';
 import '../home/home_screen.dart';
@@ -754,6 +755,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ),
           ),
         ),
+        SizedBox(
+          height: 10.h,
+        )
       ],
     );
   }

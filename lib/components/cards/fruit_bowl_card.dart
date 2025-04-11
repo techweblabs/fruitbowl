@@ -6,10 +6,11 @@ import '../../models/fruit_bowl_item.dart';
 
 class FruitBowlCard extends StatefulWidget {
   final FruitBowlItem bowl;
+    final int index; // New parameter
 
   const FruitBowlCard({
     Key? key,
-    required this.bowl,
+    required this.bowl, required this.index,
   }) : super(key: key);
 
   @override
@@ -23,7 +24,11 @@ class _FruitBowlCardState extends State<FruitBowlCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Twl.navigateToScreenAnimated(const ProductScreen(), context: context);
+        Twl.navigateToScreenAnimated(
+             ProductScreen(
+              initialPage: widget.index,
+            ),
+            context: context);
       },
       child: Container(
         width: 350,
