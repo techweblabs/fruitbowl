@@ -34,7 +34,7 @@ class ProfileHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  user.name,
+                  user.name ,
                   style: GoogleFonts.bangers(
                     fontSize: 24,
                     letterSpacing: 1.2,

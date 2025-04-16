@@ -238,7 +238,7 @@ class apiProvider with ChangeNotifier {
         // Navigate to home
         if (name.isEmpty) {
           // If no basic details are present, navigate to BasicDetails.
-          return Twl.navigateToScreenReplace(BasicDetails());
+          return Twl.navigateToScreenReplace(LocationFetchScreen());
         } else {
           Twl.navigateToScreenClearStack(LocationFetchScreen());
         }

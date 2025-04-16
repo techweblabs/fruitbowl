@@ -6,7 +6,6 @@ import 'package:sizer/sizer.dart';
 import '../../../components/decorations/background_painters.dart';
 import '../../../components/decorations/doodle_painters.dart';
 import '../../../providers/apiProvider.dart';
-import '../../../providers/firestore_api_provider.dart';
 import '../../ProfielScreen/components/bmi_card.dart';
 import '../../ProfielScreen/models/user_profile.dart';
 // Update the import to match your project structure.
@@ -62,527 +61,547 @@ class _CheckBMIBodyState extends State<CheckBMIBody>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFB2EBF2), // Medium light cyan
-                  Color.fromARGB(255, 187, 214, 188), // Soft green
-                  Color(0xFF90CAF9), // Light steel blue
-                ],
-                stops: [0.0, 0.5, 1.0],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, true);
+        return false;
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFFB2EBF2), // Medium light cyan
+                    Color.fromARGB(255, 187, 214, 188), // Soft green
+                    Color(0xFF90CAF9), // Light steel blue
+                  ],
+                  stops: [0.0, 0.5, 1.0],
+                ),
               ),
-            ),
-            child: SafeArea(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    _buildHeader(),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 5.h),
-                            const BMICheckerWidget(),
-                            const SizedBox(height: 30),
-                            _buildTextField(
-                              controller: heightController,
-                              label: 'HEIGHT (cm)',
-                              icon: Icons.height,
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your height';
-                                }
-                                return null;
-                              },
-                              suffix: _buildHeightVisualization(),
-                            ),
-                            const SizedBox(height: 20),
-                            _buildTextField(
-                              controller: weightController,
-                              label: 'WEIGHT (kg)',
-                              icon: Icons.fitness_center,
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your weight';
-                                }
-                                return null;
-                              },
-                              suffix: _buildWeightVisualization(),
-                            ),
-                            const SizedBox(height: 20),
-                            _buildTextField(
-                              controller: ageController,
-                              label: 'AGE',
-                              icon: Icons.cake,
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your age';
-                                }
-                                return null;
-                              },
-                              suffix: _buildAgeVisualization(),
-                            ),
-                            const SizedBox(height: 20),
-                            const Text(
-                              'GENDER',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
+              child: SafeArea(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      _buildHeader(),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 5.h),
+                              const BMICheckerWidget(),
+                              const SizedBox(height: 30),
+                              _buildTextField(
+                                controller: heightController,
+                                label: 'HEIGHT (cm)',
+                                icon: Icons.height,
+                                keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your height';
+                                  }
+                                  return null;
+                                },
+                                suffix: _buildHeightVisualization(),
                               ),
-                            ),
-                            const SizedBox(height: 6),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                border:
-                                    Border.all(color: Colors.black, width: 1.5),
-                                boxShadow: const [
-                                  BoxShadow(
-                                      offset: Offset(2, 2), color: Colors.black)
-                                ],
+                              const SizedBox(height: 20),
+                              _buildTextField(
+                                controller: weightController,
+                                label: 'WEIGHT (kg)',
+                                icon: Icons.fitness_center,
+                                keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your weight';
+                                  }
+                                  return null;
+                                },
+                                suffix: _buildWeightVisualization(),
                               ),
-                              child: Row(
-                                children: [
-                                  // Male option
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedGender = 'Male';
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 12),
-                                        decoration: BoxDecoration(
-                                          gradient: selectedGender == 'Male'
-                                              ? const LinearGradient(
-                                                  colors: [
-                                                    Color(0xFFBBDEFB),
-                                                    Color(0xFF90CAF9)
-                                                  ],
-                                                  begin: Alignment.topCenter,
-                                                  end: Alignment.bottomCenter,
-                                                )
-                                              : null,
-                                          color: selectedGender == 'Male'
-                                              ? null
-                                              : Colors.white,
-                                          borderRadius: const BorderRadius.only(
-                                            topLeft: Radius.circular(6),
-                                            bottomLeft: Radius.circular(6),
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.male,
-                                                color: selectedGender == 'Male'
-                                                    ? Colors.blue.shade800
-                                                    : Colors.blue.shade300,
-                                                size: 22),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              'Male',
-                                              style: TextStyle(
-                                                fontWeight:
-                                                    selectedGender == 'Male'
-                                                        ? FontWeight.bold
-                                                        : FontWeight.normal,
-                                                color: selectedGender == 'Male'
-                                                    ? Colors.blue.shade800
-                                                    : Colors.black54,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  // Divider
-                                  Container(
-                                    width: 1.5,
-                                    height: 46,
-                                    color: Colors.black,
-                                  ),
-
-                                  // Female option
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedGender = 'Female';
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 12),
-                                        decoration: BoxDecoration(
-                                          gradient: selectedGender == 'Female'
-                                              ? const LinearGradient(
-                                                  colors: [
-                                                    Color(0xFFF8BBD0),
-                                                    Color(0xFFF48FB1)
-                                                  ],
-                                                  begin: Alignment.topCenter,
-                                                  end: Alignment.bottomCenter,
-                                                )
-                                              : null,
-                                          color: selectedGender == 'Female'
-                                              ? null
-                                              : Colors.white,
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.female,
-                                                color:
-                                                    selectedGender == 'Female'
-                                                        ? Colors.pink.shade800
-                                                        : Colors.pink.shade300,
-                                                size: 22),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              'Female',
-                                              style: TextStyle(
-                                                fontWeight:
-                                                    selectedGender == 'Female'
-                                                        ? FontWeight.bold
-                                                        : FontWeight.normal,
-                                                color:
-                                                    selectedGender == 'Female'
-                                                        ? Colors.pink.shade800
-                                                        : Colors.black54,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  // Divider
-                                  Container(
-                                    width: 1.5,
-                                    height: 46,
-                                    color: Colors.black,
-                                  ),
-
-                                  // Other option
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedGender = 'Other';
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 12),
-                                        decoration: BoxDecoration(
-                                          gradient: selectedGender == 'Other'
-                                              ? const LinearGradient(
-                                                  colors: [
-                                                    Color(0xFFE0E0E0),
-                                                    Color(0xFFBDBDBD)
-                                                  ],
-                                                  begin: Alignment.topCenter,
-                                                  end: Alignment.bottomCenter,
-                                                )
-                                              : null,
-                                          color: selectedGender == 'Other'
-                                              ? null
-                                              : Colors.white,
-                                          borderRadius: const BorderRadius.only(
-                                            topRight: Radius.circular(6),
-                                            bottomRight: Radius.circular(6),
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.person,
-                                                color: selectedGender == 'Other'
-                                                    ? Colors.purple.shade800
-                                                    : Colors.purple.shade300,
-                                                size: 22),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              'Other',
-                                              style: TextStyle(
-                                                fontWeight:
-                                                    selectedGender == 'Other'
-                                                        ? FontWeight.bold
-                                                        : FontWeight.normal,
-                                                color: selectedGender == 'Other'
-                                                    ? Colors.purple.shade800
-                                                    : Colors.black54,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              const SizedBox(height: 20),
+                              _buildTextField(
+                                controller: ageController,
+                                label: 'AGE',
+                                icon: Icons.cake,
+                                keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your age';
+                                  }
+                                  return null;
+                                },
+                                suffix: _buildAgeVisualization(),
                               ),
-                            ),
-                            const SizedBox(height: 30),
-                            _showBmiCard && userProfile != null
-                                ? Bmicard(user: userProfile!)
-                                : AnimatedBuilder(
-                                    animation: _buttonAnimation,
-                                    builder: (context, child) {
-                                      return GestureDetector(
-                                        onTap: () async {
-                                          if (_formKey.currentState!
-                                                  .validate() &&
-                                              selectedGender != null) {
-                                            setState(() {
-                                              _isCalculating = true;
-                                            });
-
-                                            final apiProv =
-                                                Provider.of<apiProvider>(
-                                                    context,
-                                                    listen: false);
-                                            apiProv.gender = selectedGender ==
-                                                    "Male"
-                                                ? 1
-                                                : (selectedGender == "Female"
-                                                    ? 2
-                                                    : 3); // 3 for "Other"
-                                            apiProv.height =
-                                                heightController.text;
-                                            apiProv.weight =
-                                                weightController.text;
-                                            apiProv.age = ageController.text;
-
-                                            _animationController.forward();
-
-                                            try {
-                                              var result =
-                                                  await apiProv.CheckBmi(
-                                                      context);
-
-                                              if (result == null ||
-                                                  !result
-                                                      .containsKey('status') ||
-                                                  result['status'] == "NOK") {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  const SnackBar(
-                                                    content: Text(
-                                                        "Error retrieving BMI data. Please try again."),
-                                                  ),
-                                                );
-                                              } else if (result['status'] ==
-                                                  "OK") {
-                                                setState(() {
-                                                  bmiResult =
-                                                      result['details']['BMI'];
-                                                  bmiCategory =
-                                                      result['details']
-                                                              ['bmiCategory']
-                                                          .toString();
-                                                  userProfile = UserProfile(
-                                                    age: result['details']
-                                                        ['age'],
-                                                    phoneNumber:
-                                                        result['details']
-                                                                ['contactNo']
-                                                            .toString(),
-                                                    name: result['details']
-                                                        ['name'],
-                                                    email: result['details']
-                                                        ['email'],
-                                                    profileImage:
-                                                        result['details']
-                                                            ['profile_image'],
-                                                    gender: result['details']
-                                                                ['gender'] ==
-                                                            "1"
-                                                        ? "Male"
-                                                        : (result['details'][
-                                                                    'gender'] ==
-                                                                "2"
-                                                            ? "Female"
-                                                            : "Other"),
-                                                    bmi: double.tryParse(
-                                                            result['details']
-                                                                    ['BMI']
-                                                                .toString()) ??
-                                                        0,
-                                                    weight: double.tryParse(
-                                                            result['details']
-                                                                    ['weight']
-                                                                .toString()) ??
-                                                        0,
-                                                    height: double.tryParse(
-                                                            result['details']
-                                                                    ['height']
-                                                                .toString()) ??
-                                                        0,
-                                                  );
-                                                  _showBmiCard = true;
-                                                });
-                                              }
-                                            } catch (e) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                    content: Text(
-                                                        "An unexpected error occurred: $e")),
-                                              );
-                                            } finally {
-                                              setState(() {
-                                                _isCalculating = false;
-                                              });
-                                            }
-                                          }
+                              const SizedBox(height: 20),
+                              const Text(
+                                'GENDER',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                      color: Colors.black, width: 1.5),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                        offset: Offset(2, 2),
+                                        color: Colors.black)
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    // Male option
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedGender = 'Male';
+                                          });
                                         },
                                         child: Container(
-                                          width: double.infinity,
                                           padding: const EdgeInsets.symmetric(
-                                              vertical: 16),
+                                              vertical: 12),
                                           decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [
-                                                const Color(0xFF4CAF50)
-                                                    .withOpacity(0.9),
-                                                const Color(0xFF2E7D32)
-                                                    .withOpacity(0.9),
-                                              ],
-                                              begin: Alignment.centerLeft,
-                                              end: Alignment.centerRight,
-                                            ),
+                                            gradient: selectedGender == 'Male'
+                                                ? const LinearGradient(
+                                                    colors: [
+                                                      Color(0xFFBBDEFB),
+                                                      Color(0xFF90CAF9)
+                                                    ],
+                                                    begin: Alignment.topCenter,
+                                                    end: Alignment.bottomCenter,
+                                                  )
+                                                : null,
+                                            color: selectedGender == 'Male'
+                                                ? null
+                                                : Colors.white,
                                             borderRadius:
-                                                BorderRadius.circular(12),
-                                            border: Border.all(
-                                                color: Colors.black, width: 2),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                offset: Offset(
-                                                    4 + _buttonAnimation.value,
-                                                    4 + _buttonAnimation.value),
-                                                color: Colors.black,
-                                                blurRadius: 0,
-                                              )
-                                            ],
+                                                const BorderRadius.only(
+                                              topLeft: Radius.circular(6),
+                                              bottomLeft: Radius.circular(6),
+                                            ),
                                           ),
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              _isCalculating
-                                                  ? const SizedBox(
-                                                      width: 20,
-                                                      height: 20,
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        color: Colors.white,
-                                                        strokeWidth: 3,
-                                                      ),
-                                                    )
-                                                  : const Icon(Icons.calculate,
-                                                      color: Colors.white),
-                                              const SizedBox(width: 12),
-                                              const Text(
-                                                'CHECK BMI',
+                                              Icon(Icons.male,
+                                                  color: selectedGender ==
+                                                          'Male'
+                                                      ? Colors.blue.shade800
+                                                      : Colors.blue.shade300,
+                                                  size: 22),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                'Male',
                                                 style: TextStyle(
-                                                  fontSize: 22,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                  letterSpacing: 1.5,
+                                                  fontWeight:
+                                                      selectedGender == 'Male'
+                                                          ? FontWeight.bold
+                                                          : FontWeight.normal,
+                                                  color:
+                                                      selectedGender == 'Male'
+                                                          ? Colors.blue.shade800
+                                                          : Colors.black54,
+                                                  fontSize: 13,
                                                 ),
-                                                textAlign: TextAlign.center,
                                               ),
                                             ],
                                           ),
                                         ),
-                                      );
-                                    }),
-                            const SizedBox(height: 30),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(8),
-                                border:
-                                    Border.all(color: Colors.black, width: 1),
+                                      ),
+                                    ),
+
+                                    // Divider
+                                    Container(
+                                      width: 1.5,
+                                      height: 46,
+                                      color: Colors.black,
+                                    ),
+
+                                    // Female option
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedGender = 'Female';
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 12),
+                                          decoration: BoxDecoration(
+                                            gradient: selectedGender == 'Female'
+                                                ? const LinearGradient(
+                                                    colors: [
+                                                      Color(0xFFF8BBD0),
+                                                      Color(0xFFF48FB1)
+                                                    ],
+                                                    begin: Alignment.topCenter,
+                                                    end: Alignment.bottomCenter,
+                                                  )
+                                                : null,
+                                            color: selectedGender == 'Female'
+                                                ? null
+                                                : Colors.white,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.female,
+                                                  color: selectedGender ==
+                                                          'Female'
+                                                      ? Colors.pink.shade800
+                                                      : Colors.pink.shade300,
+                                                  size: 22),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                'Female',
+                                                style: TextStyle(
+                                                  fontWeight:
+                                                      selectedGender == 'Female'
+                                                          ? FontWeight.bold
+                                                          : FontWeight.normal,
+                                                  color:
+                                                      selectedGender == 'Female'
+                                                          ? Colors.pink.shade800
+                                                          : Colors.black54,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    // Divider
+                                    Container(
+                                      width: 1.5,
+                                      height: 46,
+                                      color: Colors.black,
+                                    ),
+
+                                    // Other option
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedGender = 'Other';
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 12),
+                                          decoration: BoxDecoration(
+                                            gradient: selectedGender == 'Other'
+                                                ? const LinearGradient(
+                                                    colors: [
+                                                      Color(0xFFE0E0E0),
+                                                      Color(0xFFBDBDBD)
+                                                    ],
+                                                    begin: Alignment.topCenter,
+                                                    end: Alignment.bottomCenter,
+                                                  )
+                                                : null,
+                                            color: selectedGender == 'Other'
+                                                ? null
+                                                : Colors.white,
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                              topRight: Radius.circular(6),
+                                              bottomRight: Radius.circular(6),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.person,
+                                                  color: selectedGender ==
+                                                          'Other'
+                                                      ? Colors.purple.shade800
+                                                      : Colors.purple.shade300,
+                                                  size: 22),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                'Other',
+                                                style: TextStyle(
+                                                  fontWeight:
+                                                      selectedGender == 'Other'
+                                                          ? FontWeight.bold
+                                                          : FontWeight.normal,
+                                                  color: selectedGender ==
+                                                          'Other'
+                                                      ? Colors.purple.shade800
+                                                      : Colors.black54,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              child: const Column(
-                                children: [
-                                  Text(
-                                    'Your BMI helps us recommend the ideal fruit combination',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
+                              const SizedBox(height: 30),
+                              _showBmiCard && userProfile != null
+                                  ? Bmicard(user: userProfile!)
+                                  : AnimatedBuilder(
+                                      animation: _buttonAnimation,
+                                      builder: (context, child) {
+                                        return GestureDetector(
+                                          onTap: () async {
+                                            if (_formKey.currentState!
+                                                    .validate() &&
+                                                selectedGender != null) {
+                                              setState(() {
+                                                _isCalculating = true;
+                                              });
+
+                                              final apiProv =
+                                                  Provider.of<apiProvider>(
+                                                      context,
+                                                      listen: false);
+                                              apiProv.gender = selectedGender ==
+                                                      "Male"
+                                                  ? 1
+                                                  : (selectedGender == "Female"
+                                                      ? 2
+                                                      : 3); // 3 for "Other"
+                                              apiProv.height =
+                                                  heightController.text;
+                                              apiProv.weight =
+                                                  weightController.text;
+                                              apiProv.age = ageController.text;
+
+                                              _animationController.forward();
+
+                                              try {
+                                                var result =
+                                                    await apiProv.CheckBmi(
+                                                        context);
+
+                                                if (result == null ||
+                                                    !result.containsKey(
+                                                        'status') ||
+                                                    result['status'] == "NOK") {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                          "Error retrieving BMI data. Please try again."),
+                                                    ),
+                                                  );
+                                                } else if (result['status'] ==
+                                                    "OK") {
+                                                  setState(() {
+                                                    bmiResult =
+                                                        result['details']
+                                                            ['BMI'];
+                                                    bmiCategory =
+                                                        result['details']
+                                                                ['bmiCategory']
+                                                            .toString();
+                                                    userProfile = UserProfile(
+                                                      age: result['details']
+                                                          ['age'],
+                                                      phoneNumber:
+                                                          result['details']
+                                                                  ['contactNo']
+                                                              .toString(),
+                                                      name: result['details']
+                                                          ['name'],
+                                                      email: result['details']
+                                                          ['email'],
+                                                      profileImage:
+                                                          result['details']
+                                                              ['profile_image'],
+                                                      gender: result['details']
+                                                                  ['gender'] ==
+                                                              "1"
+                                                          ? "Male"
+                                                          : (result['details'][
+                                                                      'gender'] ==
+                                                                  "2"
+                                                              ? "Female"
+                                                              : "Other"),
+                                                      bmi: double.tryParse(
+                                                              result['details']
+                                                                      ['BMI']
+                                                                  .toString()) ??
+                                                          0,
+                                                      weight: double.tryParse(
+                                                              result['details']
+                                                                      ['weight']
+                                                                  .toString()) ??
+                                                          0,
+                                                      height: double.tryParse(
+                                                              result['details']
+                                                                      ['height']
+                                                                  .toString()) ??
+                                                          0,
+                                                    );
+                                                    _showBmiCard = true;
+                                                  });
+                                                }
+                                              } catch (e) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                      content: Text(
+                                                          "An unexpected error occurred: $e")),
+                                                );
+                                              } finally {
+                                                setState(() {
+                                                  _isCalculating = false;
+                                                });
+                                              }
+                                            }
+                                          },
+                                          child: Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 16),
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                colors: [
+                                                  const Color(0xFF4CAF50)
+                                                      .withOpacity(0.9),
+                                                  const Color(0xFF2E7D32)
+                                                      .withOpacity(0.9),
+                                                ],
+                                                begin: Alignment.centerLeft,
+                                                end: Alignment.centerRight,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                  color: Colors.black,
+                                                  width: 2),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  offset: Offset(
+                                                      4 +
+                                                          _buttonAnimation
+                                                              .value,
+                                                      4 +
+                                                          _buttonAnimation
+                                                              .value),
+                                                  color: Colors.black,
+                                                  blurRadius: 0,
+                                                )
+                                              ],
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                _isCalculating
+                                                    ? const SizedBox(
+                                                        width: 20,
+                                                        height: 20,
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          color: Colors.white,
+                                                          strokeWidth: 3,
+                                                        ),
+                                                      )
+                                                    : const Icon(
+                                                        Icons.calculate,
+                                                        color: Colors.white),
+                                                const SizedBox(width: 12),
+                                                const Text(
+                                                  'CHECK BMI',
+                                                  style: TextStyle(
+                                                    fontSize: 22,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                    letterSpacing: 1.5,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                              const SizedBox(height: 30),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border:
+                                      Border.all(color: Colors.black, width: 1),
+                                ),
+                                child: const Column(
+                                  children: [
+                                    Text(
+                                      'Your BMI helps us recommend the ideal fruit combination',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Different body types benefit from different nutrients',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontStyle: FontStyle.italic,
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Different body types benefit from different nutrients',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Always consult with healthcare professionals about dietary choices',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontStyle: FontStyle.italic,
-                                      color: Colors.grey,
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Always consult with healthcare professionals about dietary choices',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.grey,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          if (_isCalculating)
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: Colors.black.withOpacity(0.1),
-              child: const Center(
-                child: CardLoading(),
+            if (_isCalculating)
+              Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.black.withOpacity(0.1),
+                child: const Center(
+                  child: CardLoading(),
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -593,7 +612,7 @@ class _CheckBMIBodyState extends State<CheckBMIBody>
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: () => Navigator.pop(context, true),
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(

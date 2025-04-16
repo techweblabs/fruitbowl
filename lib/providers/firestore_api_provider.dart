@@ -192,7 +192,7 @@ class FirestoreApiProvider extends ChangeNotifier {
 
   Future<void> fetchFruitBowls() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String bmiString = prefs.getString('BMIStr') ?? "";
+    String bmiString = prefs.getString('BMIStr') ?? "normal";
     if (bmiString.isEmpty) {
       print("BMI string is empty, skipping Firestore query");
       return;
@@ -301,7 +301,7 @@ class FirestoreApiProvider extends ChangeNotifier {
 
   Future<List<FruitBowlItem>> fetchrecommededfruitbowls() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String bmiString = prefs.getString('BMIStr') ?? "";
+    String bmiString = prefs.getString('BMIStr') ?? "normal";
 
     _bowls = [];
 

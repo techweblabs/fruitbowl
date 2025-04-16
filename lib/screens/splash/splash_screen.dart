@@ -68,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen>
     // At this point, the user has seen onboarding and is logged in.
     if (name.isEmpty) {
       // If no basic details are present, navigate to BasicDetails.
-      return Twl.navigateToScreenReplace(BasicDetails());
+      return Twl.navigateToScreenReplace(LocationFetchScreen());
     }
 
     // Finally, navigate to the next screen.

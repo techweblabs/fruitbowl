@@ -6,11 +6,12 @@ import '../../models/fruit_bowl_item.dart';
 
 class FruitBowlCard extends StatefulWidget {
   final FruitBowlItem bowl;
-    final int index; // New parameter
+  final int index; // New parameter
 
   const FruitBowlCard({
     Key? key,
-    required this.bowl, required this.index,
+    required this.bowl,
+    required this.index,
   }) : super(key: key);
 
   @override
@@ -24,8 +25,9 @@ class _FruitBowlCardState extends State<FruitBowlCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        print("intial index ????${widget.index}");
         Twl.navigateToScreenAnimated(
-             ProductScreen(
+            ProductScreen(
               initialPage: widget.index,
             ),
             context: context);
@@ -194,7 +196,11 @@ class _FruitBowlCardState extends State<FruitBowlCard> {
   Widget _buildSubscribeButton() {
     return GestureDetector(
       onTap: () {
-        Twl.navigateToScreenAnimated(const ProductScreen(), context: context);
+        Twl.navigateToScreenAnimated(
+            ProductScreen(
+              initialPage: widget.index,
+            ),
+            context: context);
         // Navigator.of(context).push(_createRoute());
       },
       onTapDown: (_) => setState(() => _isPressed = true),

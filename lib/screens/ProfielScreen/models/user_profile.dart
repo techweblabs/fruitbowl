@@ -20,7 +20,7 @@ class UserProfile {
   final int age; // Added age field for more accurate calculations
 
   UserProfile({
-    required this.name,
+    required this.name ,
     required this.email,
     required this.profileImage,
     required this.gender,

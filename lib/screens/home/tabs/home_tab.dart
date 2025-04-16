@@ -1,8 +1,6 @@
-// ignore_for_file: deprecated_member_use, prefer_const_constructors
-// ignore_for_file: deprecated_member_use, prefer_const_constructors
+
 
 import 'package:flutter/material.dart';
-import 'package:flutter_starter_kit/screens/CheckBMIScreen/check_bmi_screen.dart';
 import 'package:flutter_starter_kit/screens/CheckBMIScreen/components/check_bmi_screen_body.dart';
 import 'package:flutter_starter_kit/screens/ProfielScreen/components/bmi_card.dart';
 import 'package:flutter_starter_kit/screens/home/home_screen.dart';
@@ -18,7 +16,7 @@ import '../../ProfielScreen/models/user_profile.dart';
 
 class HomeTab extends StatefulWidget {
   final String username;
-  const HomeTab({Key? key, this.username = ""}) : super(key: key);
+  const HomeTab({Key? key, this.username = "User"}) : super(key: key);
 
   @override
   State<HomeTab> createState() => _HomeTabState();
@@ -50,7 +48,7 @@ class _HomeTabState extends State<HomeTab> {
 
   Future<void> loadCheckBMI() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    var pro = Provider.of<FirestoreApiProvider>(context, listen: false);
+    // var pro = Provider.of<FirestoreApiProvider>(context, listen: false);
     final loadedBMIString = prefs.getString('BMIStr') ?? "";
     setState(() {
       _checkbmi = prefs.getBool('Bmicheck') ?? false;
@@ -58,8 +56,8 @@ class _HomeTabState extends State<HomeTab> {
       userProfile = UserProfile(
         phoneNumber: prefs.getString("contactNo") ?? "",
         age: prefs.getInt('age') ?? 1,
-        name: prefs.getString('name') ?? "",
-        email: prefs.getString('email') ?? "",
+        name: prefs.getString('name') ?? "User",
+        email: prefs.getString('email') ?? "exampleuser@email.com",
         profileImage: prefs.getString('profileimage') ?? "",
         gender: prefs.getString('gender') ?? "",
         bmi: double.tryParse(prefs.getString('BMI') ?? "0") ?? 0,
@@ -89,7 +87,7 @@ class _HomeTabState extends State<HomeTab> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Column(
@@ -110,7 +108,7 @@ class _HomeTabState extends State<HomeTab> {
                                 shadows: [
                                   Shadow(
                                     color: Colors.black.withOpacity(0.3),
-                                    offset: Offset(4, 4),
+                                    offset: const Offset(4, 4),
                                     blurRadius: 0,
                                   ),
                                 ],
@@ -118,7 +116,7 @@ class _HomeTabState extends State<HomeTab> {
                             ),
                             Text(
                               'Hello, ${widget.username}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: -0.5,
@@ -127,21 +125,21 @@ class _HomeTabState extends State<HomeTab> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         _checkbmi
                             ? GestureDetector(
                                 onTap: () async {
                                   final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => CheckBMIBody()),
+                                        builder: (context) => const CheckBMIBody()),
                                   );
                                   if (result == true) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            HomeScreen(initialIndex: 0),
+                                            const HomeScreen(initialIndex: 0),
                                       ),
                                     );
                                   }
@@ -153,21 +151,21 @@ class _HomeTabState extends State<HomeTab> {
                                   final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => CheckBMIBody()),
+                                        builder: (context) => const CheckBMIBody()),
                                   );
                                   if (result == true) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            HomeScreen(initialIndex: 0),
+                                            const HomeScreen(initialIndex: 0),
                                       ),
                                     );
                                   }
                                 },
-                                child: BMISection(),
+                                child: const BMISection(),
                               ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -175,7 +173,7 @@ class _HomeTabState extends State<HomeTab> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(25),
                         topRight: Radius.circular(25),
                       ),
@@ -183,7 +181,7 @@ class _HomeTabState extends State<HomeTab> {
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
                           blurRadius: 10,
-                          offset: Offset(0, -5),
+                          offset: const Offset(0, -5),
                         ),
                       ],
                     ),
@@ -197,7 +195,7 @@ class _HomeTabState extends State<HomeTab> {
                                 pro.bowls; // Adjust property name if needed.
                             if (recommendedFruitBowls == null ||
                                 recommendedFruitBowls.isEmpty) {
-                              return Center(
+                              return const Center(
                                 child: Padding(
                                   padding: EdgeInsets.all(20.0),
                                   child: CircularProgressIndicator(),
@@ -211,7 +209,7 @@ class _HomeTabState extends State<HomeTab> {
                                   fruitBowls: recommendedFruitBowls,
                                   title: 'Recommended Fruit Bowls',
                                 ),
-                                SizedBox(height: 100),
+                                const SizedBox(height: 100),
                               ],
                             );
                           },
@@ -239,16 +237,16 @@ class _HomeTabState extends State<HomeTab> {
 
   Widget _buildBackground() {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: const [
+          colors: [
             Color(0xFF8ECAE6),
             Color(0xFF219EBC),
             Color(0xFF023047),
           ],
-          stops: const [0.0, 0.5, 1.0],
+          stops: [0.0, 0.5, 1.0],
         ),
       ),
       child: Stack(

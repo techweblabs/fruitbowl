@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_starter_kit/screens/MyOrdersScreen/my_orders_screen.dart';
 import 'package:flutter_starter_kit/screens/ProfielScreen/models/user_profile.dart';
 import 'package:flutter_starter_kit/screens/ProfielScreen/user_profile_page.dart';
-import 'package:flutter_starter_kit/screens/home/tabs/job.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'tabs/home_tab.dart';
-import 'tabs/explore_tab.dart';
 import 'tabs/favorites_tab.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,14 +30,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> loadCheckBMI() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      username = prefs.getString('name') ?? "";
+      username = prefs.getString('name') ?? "User";
     });
 
     userProfile = UserProfile(
       age: prefs.getInt("age") ?? 1,
       phoneNumber: prefs.getString("contactNo") ?? "",
-      name: prefs.getString('name') ?? "",
-      email: prefs.getString('email') ?? "",
+      name: prefs.getString('name') ?? "User",
+      email: prefs.getString('email') ?? "exampleuser@gmail.com",
       profileImage: prefs.getString('profileimage') ?? "",
       gender: prefs.getString('gender') ?? "",
       bmi: double.tryParse(prefs.getString('BMI') ?? "0") ?? 0,
@@ -57,7 +55,9 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'home'.tr,
             icon: Icons.home_rounded,
             activeColor: Colors.yellow.shade200,
-            screenBuilder: () => HomeTab()
+            screenBuilder: () => HomeTab(
+                  username: username,
+                )
             // HomeTab(
             //   username: username,
             // ),

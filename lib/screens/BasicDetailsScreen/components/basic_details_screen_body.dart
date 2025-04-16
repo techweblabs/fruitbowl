@@ -99,8 +99,8 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
                           children: [
                             _buildPersonalInfoSection(),
                             const SizedBox(height: 24),
-                            _buildHealthInfoSection(),
-                            const SizedBox(height: 32),
+                            // _buildHealthInfoSection(),
+                            // const SizedBox(height: 32),
                             _buildSaveButton(),
                           ],
                         ),
@@ -617,10 +617,15 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
 
   void _saveProfile() async {
     if (_formKey.currentState!.validate()) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
       setState(() {
         _isEditing = true;
         _isLoading = true;
       });
+
+      prefs.setString('name', _nameController.text.toString());
+      prefs.setString('email', _emailController.text.toString());
+      prefs.setString('gender', _selectedGender);
 
       // Prepare the parameters as before.
       Map<String, dynamic> params = {
@@ -648,14 +653,15 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
 
       print(params);
 
-      await Provider.of<apiProvider>(context, listen: false)
-          .UpdateProfile(context);
+      // await Provider.of<apiProvider>(context, listen: false)
+      //     .UpdateProfile(context);
 
       setState(() {
         _isLoading = false;
         _isEditing = false;
       });
 
+      // ignore: use_build_context_synchronously
       Twl.navigateToScreenAnimated(LocationFetchScreen(), context: context);
     }
   }
