@@ -36,7 +36,15 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
   @override
   void initState() {
     super.initState();
-    loadcontactno();
+    _nameController = TextEditingController(text: "");
+    _emailController = TextEditingController(text: "");
+    _phoneController = TextEditingController(text: "");
+    _ageController = TextEditingController(text: "");
+    _selectedGender = "Male"; // default gender
+    _heightController = TextEditingController(text: "");
+    _weightController = TextEditingController(text: "");
+
+    loadcontactno(); // This will update the phone number later
     // All fields are empty by default.
   }
 
@@ -44,13 +52,7 @@ class _BasicDetailsBodyState extends State<BasicDetailsBody> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       contactno = prefs.getString('contactNo') ?? "";
-      _nameController = TextEditingController(text: "");
-      _emailController = TextEditingController(text: "");
-      _phoneController = TextEditingController(text: contactno);
-      _ageController = TextEditingController(text: "");
-      _selectedGender = "Male"; // default gender
-      _heightController = TextEditingController(text: "");
-      _weightController = TextEditingController(text: "");
+      _phoneController.text = contactno;
     });
   }
 

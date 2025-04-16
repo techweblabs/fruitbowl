@@ -92,34 +92,32 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen>
     setState(() {
       _isLoading = true;
     });
+
     if (phoneDigits.length == 10) {
       Provider.of<apiProvider>(context, listen: false).contactNo =
           phoneDigits.join();
+
       var result =
           await Provider.of<apiProvider>(context, listen: false).SendOtp();
-      if (result['status'] == "OK") {
-        // Navigate to OTP verification
+
+      if (result != null && result['status'] == "OK") {
         Twl.navigateToScreenAnimated(
           context: Twl.currentContext,
           OtpVerificationScreen(
             phoneNumber: '+91 ${phoneDigits.join()}',
           ),
         );
+      } else {
+        Twl.showErrorAlert();
+        // Twl.showAlert(context, 'Failed to send OTP. Please try again.');
       }
-    
-
-      setState(() {
-        _isLoading = false;
-      });
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => OtpVerificationScreen(
-      //       phoneNumber: '+91 ${phoneDigits.join()}',
-      //     ),
-      //   ),
-      // );
+    } else {
+      Twl.showErrorAlert();
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override

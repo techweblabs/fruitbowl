@@ -1,6 +1,7 @@
 // lib/checkout/components/product_confirmation.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../utils/brutal_decoration.dart';
 
@@ -147,10 +148,6 @@ class ProductConfirmation extends StatelessWidget {
                         fontSize: 20,
                       ),
                     ),
-                    Text(
-                      product['description'],
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
                   ],
                 ),
                 Column(
@@ -172,14 +169,20 @@ class ProductConfirmation extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 16),
 
+          Text(
+            product['description'],
+            maxLines: 2,
+            style: TextStyle(color: Colors.grey[700]),
+          ),
           const SizedBox(height: 16),
 
           // Ingredients overview
           const Text(
             "What You'll Get:",
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),

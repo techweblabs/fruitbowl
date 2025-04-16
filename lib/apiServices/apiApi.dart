@@ -14,6 +14,7 @@ class apiApi {
       print('URL >>>>>>>${ApiConstants.SEND_OTP}');
       return result;
     } catch (e) {
+      print(e.toString());
       throw Exception('Error: \function(){i.e(t,r,s,arguments)}');
     }
   }
@@ -80,7 +81,6 @@ class apiApi {
         'Content-Type': 'application/json',
       };
       log("$authCode");
-   
 
       final result = await _api.typePost(ApiConstants.ADD_ADDRESS, params,
           headers: headers);
@@ -99,7 +99,7 @@ class apiApi {
         'Content-Type': 'application/json',
       };
       log("$authCode");
-      
+
       final result =
           await _api.typeGet(ApiConstants.GET_ADDRESS, headers: headers);
       return result;

@@ -1167,279 +1167,340 @@ class _LocationPickerPageState extends State<AddAddressPage> {
 
   Widget _buildAddressForm() {
     return Container(
-      decoration: BrutalDecoration.brutalBox(),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // House/Flat/Block Number
-            const Text(
-              "AREA",
+      padding: const EdgeInsets.all(16),
+      decoration: BrutalDecoration.brutalBox(color: Colors.white),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BrutalDecoration.brutalBox(),
+            child: const Text(
+              "Address Information",
               style: TextStyle(
-                fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey,
+                fontSize: 16,
               ),
             ),
-            const SizedBox(height: 8),
-            Container(
-                decoration: BrutalDecoration.brutalBox(),
-                child: TextFormField(
-                  // onTap: () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(builder: (context) => AddAddressPage()),
-                  //   );
-                  // },
-                  // readOnly: true,
-                  controller: _landmarkController,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 8),
-                  ),
-                )),
-            const SizedBox(height: 24),
-            const Text(
-              "LandMark",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              decoration: BrutalDecoration.brutalBox(),
-              child: TextFormField(
-                controller: _apartmentController,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 8),
-                ),
-                // validator: (value) {
-                //   if (value == null || value.isEmpty) {
-                //     return "Please enter area/locality";
-                //   }
-                //   return null;
-                // },
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              "FlatNumber",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              decoration: BrutalDecoration.brutalBox(),
-              child: TextFormField(
-                controller: _houseNumberController,
-                decoration: const InputDecoration(
-                  // hintText: "e.g. Madhapur",
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 8),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter flatnumber";
-                  }
-                  return null;
-                },
-              ),
-            ),
-            const SizedBox(height: 24),
-            // City
-            const Text(
-              "CITY",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-                decoration: BrutalDecoration.brutalBox(),
-                child: TextFormField(
-                  // onTap: () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(builder: (context) => AddAddressPage()),
-                  //   );
-                  // },
-                  controller: _cityController,
-                  //  readOnly: true,
-                  decoration: const InputDecoration(
-                    hintText: "e.g. Hyderabad",
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 8),
-                  ),
-                )),
-            const SizedBox(height: 24),
+          ),
+          const SizedBox(height: 20),
 
-            // State
-            const Text(
-              "STATE",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-                decoration: BrutalDecoration.brutalBox(),
-                child: TextFormField(
-                  // onTap: () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(builder: (context) => AddAddressPage()),
-                  //   );
-                  // },
-                  controller: _stateController,
-                  // readOnly: true,
-                  decoration: const InputDecoration(
-                    hintText: "e.g. Hyderabad",
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 8),
-                  ),
-                )),
-            const SizedBox(height: 24),
+          // Area field
+          _buildTextField(
+            readonly: false,
+            controller: _landmarkController,
+            label: "Area",
+            icon: Icons.location_on,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Area cannot be empty";
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
 
-            // Pincode
-            const Text(
-              "PINCODE",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-                decoration: BrutalDecoration.brutalBox(),
-                child: TextFormField(
-                  // onTap: () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(builder: (context) => AddAddressPage()),
-                  //   );
-                  // },
-                  controller: _zipCodeController,
-                  decoration: const InputDecoration(
-                    hintText: "e.g. Hyderabad",
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 8),
-                  ),
-                )),
-            const SizedBox(height: 16),
-            // Delivery Preference - Leave at Door
-            const Text(
-              "DELIVERY PREFERENCE",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
+          // Landmark field
+          _buildTextField(
+            readonly: false,
+            controller: _apartmentController,
+            label: "Landmark",
+            icon: Icons.tour,
+          ),
+          const SizedBox(height: 16),
+
+          // Flat Number field
+          _buildTextField(
+            readonly: false,
+            controller: _houseNumberController,
+            label: "Flat Number",
+            icon: Icons.home,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Flat number cannot be empty";
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+
+          // City field
+          _buildTextField(
+            readonly: false,
+            controller: _cityController,
+            label: "City",
+            icon: Icons.location_city,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "City cannot be empty";
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+
+          // State field
+          _buildTextField(
+            readonly: false,
+            controller: _stateController,
+            label: "State",
+            icon: Icons.map,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "State cannot be empty";
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+
+          // Pincode field
+          _buildTextField(
+            readonly: false,
+            controller: _zipCodeController,
+            label: "Pincode",
+            icon: Icons.pin_drop,
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Pincode cannot be empty";
+              }
+              if (value.length != 6) {
+                return "Pincode must be 6 digits";
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 24),
+
+          // Delivery preferences section
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BrutalDecoration.brutalBox(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Checkbox(
-                  value: _leaveAtDoor,
-                  onChanged: (value) {
-                    setState(() {
-                      _leaveAtDoor = value!;
-                    });
-                  },
+                Row(
+                  children: [
+                    const Icon(Icons.delivery_dining, size: 20),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "Delivery Preferences",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
-                const Text("Leave at door"),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _leaveAtDoor,
+                      onChanged: (value) {
+                        setState(() {
+                          _leaveAtDoor = value!;
+                        });
+                      },
+                    ),
+                    const Text("Leave at door"),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _avoidCalling,
+                      onChanged: (value) {
+                        setState(() {
+                          _avoidCalling = value!;
+                        });
+                      },
+                    ),
+                    const Text("Avoid calling"),
+                  ],
+                ),
               ],
             ),
-            const SizedBox(height: 4),
+          ),
+          const SizedBox(height: 16),
 
-            // Delivery Preference - Avoid Calling
-            Row(
+          // Delivery instructions
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BrutalDecoration.brutalBox(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Checkbox(
-                  value: _avoidCalling,
-                  onChanged: (value) {
-                    setState(() {
-                      _avoidCalling = value!;
-                    });
-                  },
+                Row(
+                  children: [
+                    const Icon(Icons.speaker_notes, size: 20),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "Delivery Instructions",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
-                const Text("Avoid calling"),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // Delivery Instructions
-            const Text(
-              "DELIVERY INSTRUCTIONS",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              decoration: BrutalDecoration.brutalBox(),
-              child: TextFormField(
-                controller: _deliveryInstructionsController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  hintText: "e.g. Please leave near the door or under the mat",
-                  border: InputBorder.none,
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Mark as Default Address
-            Row(
-              children: [
-                Checkbox(
-                  value: _isDefaultAddress,
-                  onChanged: (value) {
-                    setState(() {
-                      _isDefaultAddress = value!;
-                    });
-                  },
-                ),
-                const Text(
-                  "Mark as default address",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                const SizedBox(height: 12),
+                Container(
+                  decoration: BrutalDecoration.brutalBox(),
+                  child: TextFormField(
+                    controller: _deliveryInstructionsController,
+                    maxLines: 3,
+                    decoration: const InputDecoration(
+                      hintText:
+                          "e.g. Please leave near the door or under the mat",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.all(12),
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+          ),
+          const SizedBox(height: 16),
 
-            // Address type selection
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          // Default address checkbox
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isDefaultAddress = !_isDefaultAddress;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BrutalDecoration.brutalBox(
+                color: _isDefaultAddress ? Colors.green : Colors.white,
+              ),
+              child: Row(
+                children: [
+                  Checkbox(
+                    value: _isDefaultAddress,
+                    activeColor: Colors.green,
+                    onChanged: (value) {
+                      setState(() {
+                        _isDefaultAddress = value!;
+                      });
+                    },
+                  ),
+                  const Icon(Icons.star, color: Colors.amber),
+                  const SizedBox(width: 8),
+                  const Text(
+                    "Mark as default address",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Address type selection
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BrutalDecoration.brutalBox(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildAddressTypeOption("Home", Icons.home),
-                _buildAddressTypeOption("Work", Icons.work),
-                _buildAddressTypeOption("Other", Icons.place),
+                Row(
+                  children: [
+                    const Icon(Icons.label, size: 20),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "Address Type",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildAddressTypeOption("Home", Icons.home),
+                        _buildAddressTypeOption("Work", Icons.work),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildAddressTypeOption("Friend", Icons.person),
+                        _buildAddressTypeOption("Others", Icons.other_houses),
+                      ],
+                    ),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+
+  Widget _buildTextField({
+    required bool readonly,
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.black, width: 1.5),
+            boxShadow: const [
+              BoxShadow(offset: Offset(2, 2), color: Colors.black)
+            ],
+          ),
+          child: TextFormField(
+            readOnly: readonly,
+            controller: controller,
+            keyboardType: keyboardType,
+            validator: validator,
+            decoration: InputDecoration(
+              prefixIcon: Icon(icon),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 12,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+// Helper method for address type option buttons
 
   Widget _buildAddressTypeOption(String type, IconData icon) {
     final isSelected = _addressType == type;

@@ -40,6 +40,7 @@ dependencies:
   geocoding: ^3.0.0
   flutter_typeahead: ^5.2.0
   cloud_firestore: 
+  morphable_shape: ^2.0.0
 
 dev_dependencies:
   flutter_test:

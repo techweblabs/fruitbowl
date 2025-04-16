@@ -195,25 +195,33 @@ class apiProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future SendOtp() async {
+  Future<Map<String, dynamic>?> SendOtp() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     try {
       final params = {
         'contactNo': _contactNo,
       };
+
       final response = await apiApi().SendOtp(params);
+
       if (response['status'] == "OK") {
         prefs.setString('contactNo', _contactNo);
+        sessionCode = response['details'];
       }
+
       print(response);
-      sessionCode = response['details'];
       return response;
     } catch (e) {
       print('Error: $e');
+      return {
+        'status': 'ERROR',
+        'message': 'Something went wrong',
+      };
     }
   }
 
-  Future<void> VerifyOtp() async {
+  VerifyOtp() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String name = prefs.getString('name') ?? "";
     try {
@@ -225,6 +233,8 @@ class apiProvider with ChangeNotifier {
       final response = await apiApi().VerifyOtp(params);
       print(response);
       if (response['status'] == "OK") {
+        await StorageService.setBool('isLoggedIn', true);
+
         // Navigate to home
         if (name.isEmpty) {
           // If no basic details are present, navigate to BasicDetails.
@@ -232,7 +242,6 @@ class apiProvider with ChangeNotifier {
         } else {
           Twl.navigateToScreenClearStack(LocationFetchScreen());
         }
-        await StorageService.setBool('isLoggedIn', true);
         // Show success message
         Twl.showSuccessSnackbar('Successfully verified');
       }

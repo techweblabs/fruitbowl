@@ -67,19 +67,19 @@ class BottomNav extends StatelessWidget {
                 }
 
                 // Show loading dialog
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
+                // showDialog(
+                //   context: context,
+                //   barrierDismissible: false,
+                //   builder: (context) => const Center(
+                //     child: CircularProgressIndicator(),
+                //   ),
+                // );
 
                 // Simulate payment processing
-                Future.delayed(const Duration(seconds: 2), () {
-                  Navigator.pop(context); // Close loading dialog
-                  _onPaymentSuccess(context);
-                });
+                // Future.delayed(const Duration(seconds: 2), () {
+                //   Navigator.pop(context); // Close loading dialog
+                //   _onPaymentSuccess(context);
+                // });
               } else {
                 onNext();
               }

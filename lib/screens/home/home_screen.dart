@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/screens/MyOrdersScreen/my_orders_screen.dart';
 import 'package:flutter_starter_kit/screens/ProfielScreen/models/user_profile.dart';
 import 'package:flutter_starter_kit/screens/ProfielScreen/user_profile_page.dart';
+import 'package:flutter_starter_kit/screens/home/tabs/job.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
@@ -52,18 +54,19 @@ class _HomeScreenState extends State<HomeScreen> {
       initialIndex: widget.initialIndex,
       items: [
         BottomNavigationItem(
-          label: 'home'.tr,
-          icon: Icons.home_rounded,
-          activeColor: Colors.yellow.shade200,
-          screenBuilder: () => HomeTab(
-            username: username,
-          ),
-        ),
+            label: 'home'.tr,
+            icon: Icons.home_rounded,
+            activeColor: Colors.yellow.shade200,
+            screenBuilder: () => HomeTab()
+            // HomeTab(
+            //   username: username,
+            // ),
+            ),
         BottomNavigationItem(
-          label: 'explore'.tr,
-          icon: Icons.explore_rounded,
+          label: 'my_orders'.tr,
+          icon: Icons.food_bank,
           activeColor: Colors.green.shade100,
-          screenBuilder: () => const ExploreTab(),
+          screenBuilder: () => const OrdersPage(),
         ),
         BottomNavigationItem(
           label: 'favorites'.tr,

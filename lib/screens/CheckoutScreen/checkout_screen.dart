@@ -1,6 +1,9 @@
 // lib/checkout/checkout_screen.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/screens/MyOrdersScreen/my_orders_screen.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
+import 'package:flutter_starter_kit/services/order_service.dart'; // Import the order service
 
 import '../../utils/brutal_decoration.dart';
 import 'components/checkout_progress.dart';
@@ -49,8 +52,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   // Add payment method
   String _paymentMethod = '';
 
+  // Order service
+  final OrderService _orderService = OrderService();
+
   // Scroll controller for the stepper
   final ScrollController _scrollController = ScrollController();
+
+  // Loading state
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -72,29 +81,65 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   String get _planPrice =>
       widget.selectedProduct['plans'][_selectedPlanIndex]['price'];
 
-  // Method to print checkout selections
-  void _printCheckoutSelections() {
-    // Create a map with all selections
-    final checkoutData = {
-      'Product': widget.selectedProduct['name'],
-      'Plan':
-          '${_planDays} Day Plan (${widget.selectedProduct['plans'][_selectedPlanIndex]['savings']} savings)', // Use available fields
-      'Days': _planDays.toString(),
-      'Price': _planPrice,
-      'Delivery Option': _deliveryOption,
-      'Start Date':
-          _selectedDate.toString().split(' ')[0], // Just the date part
-      'Time Slot': _selectedSlot,
-      'Address': _addressData.toString(),
-      'Payment Method': _paymentMethod,
-    };
-
-    // Print to console
-    print('====== CHECKOUT SELECTIONS ======');
-    checkoutData.forEach((key, value) {
-      print('$key: $value');
+  // Submit order to Firebase
+  Future<void> _submitOrderToFirebase() async {
+    setState(() {
+      _isLoading = true;
     });
-    print('================================');
+
+    try {
+      // Call the order service to submit the order
+      final orderData = await _orderService.submitOrder(
+        product: widget.selectedProduct,
+        selectedPlanIndex: _selectedPlanIndex,
+        deliveryOption: _deliveryOption,
+        startDate: _selectedDate,
+        timeSlot: _selectedSlot,
+        addressData: _addressData,
+        paymentMethod: _paymentMethod,
+      );
+
+      // Log the created order
+      print('====== ORDER CREATED ======');
+      print('Order ID: ${orderData['id']}');
+      print('Start Date: ${(orderData['startDate'] as Timestamp).toDate()}');
+      print('End Date: ${(orderData['endDate'] as Timestamp).toDate()}');
+      print('Total Days: ${orderData['totalDays']}');
+      print('Delivery Days: ${orderData['deliveryDays']}');
+      print('Delivery Time: ${orderData['deliveryTime']}');
+      print('===========================');
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Order placed successfully!"),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Navigate to order success or orders page
+      // You would replace this with your own navigation
+      // Future.delayed(const Duration(seconds: 2), () {
+      //   Navigator.of(context).popUntil((route) => route.isFirst);
+      //   // Or navigate to order success page
+      //   // Navigator.of(context).pushReplacementNamed('/order-success', arguments: orderData);
+      // });
+      Twl.navigateToScreenAnimated(const OrdersPage(), context: context);
+    } catch (e) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to place order: ${e.toString()}"),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -102,24 +147,38 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CheckoutProgress(currentStep: _currentStep),
-            const SizedBox(height: 24),
-            _buildCurrentStepContent(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNav(
-        currentStep: _currentStep,
-        onBack: _goToPreviousStep,
-        onNext: _goToNextStep,
-        onPaymentSubmit: _printCheckoutSelections, // Add this new parameter
-      ),
+      body: _isLoading
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text("Processing your order..."),
+                ],
+              ),
+            )
+          : SingleChildScrollView(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CheckoutProgress(currentStep: _currentStep),
+                  const SizedBox(height: 24),
+                  _buildCurrentStepContent(),
+                ],
+              ),
+            ),
+      bottomNavigationBar: _isLoading
+          ? null
+          : BottomNav(
+              currentStep: _currentStep,
+              onBack: _goToPreviousStep,
+              onNext: _goToNextStep,
+              onPaymentSubmit:
+                  _submitOrderToFirebase, // Use the Firebase submit method
+            ),
     );
   }
 
@@ -230,14 +289,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         _currentStep++;
       });
       _scrollToTop();
-    } else {
-      // Final step - process payment
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Processing payment..."),
-          duration: Duration(seconds: 2),
-        ),
-      );
     }
   }
 

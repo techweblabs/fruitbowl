@@ -382,7 +382,8 @@ class _CheckBMIBodyState extends State<CheckBMIBody>
 
                                             try {
                                               var result =
-                                                  await apiProv.CheckBmi(context);
+                                                  await apiProv.CheckBmi(
+                                                      context);
 
                                               if (result == null ||
                                                   !result

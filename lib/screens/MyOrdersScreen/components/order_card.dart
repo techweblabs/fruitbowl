@@ -1,12 +1,12 @@
 // lib/orders/components/order_card.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../utils/brutal_decoration.dart';
-import '../models/order.dart';
 
 class OrderCard extends StatelessWidget {
-  final Order order;
+  final order;
   final VoidCallback onTap;
 
   const OrderCard({
@@ -33,13 +33,100 @@ class OrderCard extends StatelessWidget {
     );
   }
 
+  // Get a color based on status
+  Color get statusColor {
+    final String status = order['status'] ?? 'Active';
+    switch (status) {
+      case 'Active':
+        return Colors.green;
+      case 'Upcoming':
+        return Colors.blue;
+      case 'Completed':
+        return Colors.grey;
+      case 'Paused':
+        return Colors.orange;
+      default:
+        return Colors.black;
+    }
+  }
+
+  // Calculate progress percentage
+  double get progressPercentage {
+    final int totalDays = order['totalDays'] ?? 0;
+    final int remainingDays = order['remainingDays'] ?? 0;
+    if (totalDays == 0) return 0;
+    return (totalDays - remainingDays) / totalDays;
+  }
+
+  // Format date as string
+  String formatDate(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
+  }
+
+  // Get formatted duration string
+  String get durationText {
+    final int totalDays = order['totalDays'] ?? 0;
+
+    final DateTime startDate = order['startDate'] is Timestamp
+        ? (order['startDate'] as Timestamp).toDate()
+        : DateTime.now();
+
+    final DateTime endDate = order['endDate'] is Timestamp
+        ? (order['endDate'] as Timestamp).toDate()
+        : DateTime.now().add(const Duration(days: 30));
+
+    return "$totalDays days (${formatDate(startDate)} - ${formatDate(endDate)})";
+  }
+
+  // Get delivery schedule text
+  String get deliveryScheduleText {
+    final String deliveryDays = order['deliveryDays'] ?? 'Weekdays';
+    final String deliveryTime = order['deliveryTime'] ?? '9 AM - 11 AM';
+    return "$deliveryDays • $deliveryTime";
+  }
+
+  // Get gradient colors from the order
+  List<Color> get gradientColors {
+    List<Color> colors = [];
+    if (order['gradientColors'] != null) {
+      for (var colorData in order['gradientColors']) {
+        if (colorData is Map) {
+          colors.add(
+            Color.fromRGBO(
+              colorData['red'] ?? 0,
+              colorData['green'] ?? 0,
+              colorData['blue'] ?? 0,
+              colorData['alpha'] != null ? colorData['alpha'] / 255 : 1.0,
+            ),
+          );
+        }
+      }
+    }
+
+    // If no valid colors were found, use defaults
+    if (colors.isEmpty) {
+      colors = [
+        const Color(0xFF8ECAE6),
+        const Color(0xFF219EBC),
+        const Color(0xFF023047),
+      ];
+    }
+
+    return colors;
+  }
+
   Widget _buildCardHeader() {
+    final String imageUrl = order['imageUrl'] ?? 'assets/images/fruits.png';
+    final String productName = order['productName'] ?? 'Product';
+    final String id = order['id'] ?? '';
+    final String status = order['status'] ?? 'Active';
+
     return Container(
       height: 100,
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
         image: DecorationImage(
-          image: AssetImage(order.imageUrl),
+          image: AssetImage(imageUrl),
           fit: BoxFit.cover,
         ),
       ),
@@ -50,8 +137,10 @@ class OrderCard extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              order.gradientColors[0].withOpacity(0.7),
-              order.gradientColors[2].withOpacity(0.9),
+              gradientColors[0].withOpacity(0.7),
+              gradientColors.length > 2
+                  ? gradientColors[2].withOpacity(0.9)
+                  : gradientColors.last.withOpacity(0.9),
             ],
           ),
         ),
@@ -68,7 +157,7 @@ class OrderCard extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: order.statusColor,
+                  color: statusColor,
                   borderRadius: BorderRadius.circular(4),
                   border: Border.all(color: Colors.black, width: 1),
                   boxShadow: const [
@@ -76,7 +165,7 @@ class OrderCard extends StatelessWidget {
                   ],
                 ),
                 child: Text(
-                  order.status,
+                  status,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -100,7 +189,7 @@ class OrderCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  "ID: ${order.id}",
+                  "ID: $id",
                   style: TextStyle(
                     color: Colors.grey[800],
                     fontSize: 10,
@@ -114,7 +203,7 @@ class OrderCard extends StatelessWidget {
               bottom: 0,
               left: 0,
               child: Text(
-                order.productName,
+                productName,
                 style: GoogleFonts.bangers(
                   fontSize: 24,
                   color: Colors.white,
@@ -136,22 +225,28 @@ class OrderCard extends StatelessWidget {
   }
 
   Widget _buildCardBody() {
+    final String status = order['status'] ?? 'Active';
+    final int remainingDays = order['remainingDays'] ?? 0;
+    final DateTime orderDate = order['orderDate'] is Timestamp
+        ? (order['orderDate'] as Timestamp).toDate()
+        : DateTime.now();
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Order details rows
-          _buildDetailRow("Duration:", order.durationText),
+          _buildDetailRow("Duration:", durationText),
           const SizedBox(height: 4),
-          _buildDetailRow("Delivery:", order.deliveryScheduleText),
+          _buildDetailRow("Delivery:", deliveryScheduleText),
           const SizedBox(height: 4),
-          _buildDetailRow("Order Date:", order.formatDate(order.orderDate)),
+          _buildDetailRow("Order Date:", formatDate(orderDate)),
 
           const SizedBox(height: 12),
 
           // Progress bar for active orders
-          if (order.status == 'Active')
+          if (status == 'Active')
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -166,7 +261,7 @@ class OrderCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "${order.remainingDays} days left",
+                      "$remainingDays days left",
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[600],
@@ -185,7 +280,7 @@ class OrderCard extends StatelessWidget {
                   ),
                   child: FractionallySizedBox(
                     alignment: Alignment.centerLeft,
-                    widthFactor: order.progressPercentage,
+                    widthFactor: progressPercentage.clamp(0.0, 1.0),
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.green,
@@ -202,6 +297,8 @@ class OrderCard extends StatelessWidget {
   }
 
   Widget _buildCardFooter() {
+    final String price = order['price'] ?? '₹0';
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
@@ -231,7 +328,7 @@ class OrderCard extends StatelessWidget {
                 ),
               ),
               Text(
-                order.price,
+                price,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,

@@ -8,19 +8,19 @@ class TranslationService extends Translations {
   static const String SPANISH = 'es';
   static const String FRENCH = 'fr';
   static const String ARABIC = 'ar';
-  
+
   static const Locale ENGLISH_LOCALE = Locale('en', 'US');
   static const Locale SPANISH_LOCALE = Locale('es', 'ES');
   static const Locale FRENCH_LOCALE = Locale('fr', 'FR');
   static const Locale ARABIC_LOCALE = Locale('ar', 'SA');
-  
+
   static final List<Locale> supportedLocales = [
     ENGLISH_LOCALE,
     SPANISH_LOCALE,
     FRENCH_LOCALE,
     ARABIC_LOCALE,
   ];
-  
+
   static final Map<String, Map<String, String>> translationsKeys = {
     'en_US': {
       'hello': 'Hello',
@@ -57,13 +57,15 @@ class TranslationService extends Translations {
       'done': 'Done',
       'error': 'Error',
       'success': 'Success',
-      'warning': 'Warning','info': 'Information',
+      'warning': 'Warning',
+      'info': 'Information',
       'noInternet': 'No Internet Connection',
       'tryAgain': 'Try Again',
       'somethingWentWrong': 'Something went wrong',
       'pleaseTryAgain': 'Please try again later',
       'home': 'Home',
       'explore': 'Explore',
+      'my_orders': 'My Orders',
       'favorites': 'Favorites',
       'account': 'Account',
       'testFeatures': 'Test Features',
@@ -229,7 +231,7 @@ class TranslationService extends Translations {
 
   @override
   Map<String, Map<String, String>> get keys => translationsKeys;
-  
+
   // Get locale name
   static String getLocaleName(String localeKey) {
     switch (localeKey) {
@@ -245,7 +247,7 @@ class TranslationService extends Translations {
         return 'English';
     }
   }
-  
+
   // Get locale from string
   static Locale getLocaleFromString(String localeKey) {
     switch (localeKey) {
@@ -261,19 +263,19 @@ class TranslationService extends Translations {
         return ENGLISH_LOCALE;
     }
   }
-  
+
   // Save selected language
   static Future<void> saveLanguage(String language) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(LANGUAGE_KEY, language);
   }
-  
+
   // Get saved language
   static Future<String> getLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(LANGUAGE_KEY) ?? ENGLISH;
   }
-  
+
   // Change locale
   static Future<void> changeLocale(String languageCode) async {
     final locale = getLocaleFromString(languageCode);

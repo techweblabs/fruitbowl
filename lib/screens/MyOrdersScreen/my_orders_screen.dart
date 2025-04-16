@@ -1,15 +1,16 @@
 // lib/orders/orders_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_starter_kit/screens/MyOrdersScreen/order_calendar_view.dart';
 import 'package:flutter_starter_kit/screens/home/home_screen.dart';
-import 'package:flutter_starter_kit/screens/home/tabs/home_tab.dart';
+import 'package:flutter_starter_kit/services/order_service.dart'; // Import the order service
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_starter_kit/utils/helpers/twl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../utils/brutal_decoration.dart';
 import 'components/order_card.dart';
 import 'components/order_filter.dart';
 import 'order_details_page.dart';
-import 'models/order.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
@@ -20,92 +21,50 @@ class OrdersPage extends StatefulWidget {
 
 class _OrdersPageState extends State<OrdersPage> {
   String _activeFilter = 'All';
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _orders = [];
+  final OrderService _orderService = OrderService();
 
-  // Sample orders data
-  final List<Order> _orders = [
-    Order(
-      id: 'ORD123456',
-      productName: 'Healthy Fruit Bowl',
-      price: '₹2,314',
-      startDate: DateTime.now().add(const Duration(days: 1)),
-      endDate: DateTime.now().add(const Duration(days: 31)),
-      imageUrl: 'assets/images/fruits.png',
-      status: 'Active',
-      deliveryDays: 'Weekdays',
-      deliveryTime: '6 AM - 9 AM',
-      totalDays: 30,
-      remainingDays: 30,
-      orderDate: DateTime.now().subtract(const Duration(days: 2)),
-      gradientColors: [
-        const Color(0xFF8ECAE6),
-        const Color(0xFF219EBC),
-        const Color(0xFF023047),
-      ],
-    ),
-    Order(
-      id: 'ORD123457',
-      productName: 'Energy Protein Bowl',
-      price: '₹3,094',
-      startDate: DateTime.now().add(const Duration(days: 2)),
-      endDate: DateTime.now().add(const Duration(days: 32)),
-      imageUrl: 'assets/images/fruits.png',
-      status: 'Upcoming',
-      deliveryDays: 'Weekends',
-      deliveryTime: '12 PM - 3 PM',
-      totalDays: 30,
-      remainingDays: 30,
-      orderDate: DateTime.now().subtract(const Duration(days: 1)),
-      gradientColors: [
-        const Color(0xFFF4A261),
-        const Color(0xFFE76F51),
-        const Color(0xFF264653),
-      ],
-    ),
-    Order(
-      id: 'ORD123458',
-      productName: 'Detox Green Bowl',
-      price: '₹693',
-      startDate: DateTime.now().subtract(const Duration(days: 3)),
-      endDate: DateTime.now().add(const Duration(days: 4)),
-      imageUrl: 'assets/images/fruits.png',
-      status: 'Active',
-      deliveryDays: 'Custom',
-      deliveryTime: '5 PM - 8 PM',
-      totalDays: 7,
-      remainingDays: 4,
-      orderDate: DateTime.now().subtract(const Duration(days: 5)),
-      gradientColors: [
-        const Color(0xFF2A9D8F),
-        const Color(0xFF43AA8B),
-        const Color(0xFF264653),
-      ],
-    ),
-    Order(
-      id: 'ORD123459',
-      productName: 'Healthy Fruit Bowl',
-      price: '₹1,246',
-      startDate: DateTime.now().subtract(const Duration(days: 10)),
-      endDate: DateTime.now().subtract(const Duration(days: 1)),
-      imageUrl: 'assets/images/comic_fruits.png',
-      status: 'Completed',
-      deliveryDays: 'Everyday',
-      deliveryTime: '9 PM - 11 PM',
-      totalDays: 15,
-      remainingDays: 0,
-      orderDate: DateTime.now().subtract(const Duration(days: 12)),
-      gradientColors: [
-        const Color(0xFF8ECAE6),
-        const Color(0xFF219EBC),
-        const Color(0xFF023047),
-      ],
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchOrders();
+  }
 
-  List<Order> get _filteredOrders {
+  // Fetch orders from Firebase
+  Future<void> _fetchOrders() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final orderData = await _orderService.getUserOrders();
+
+      setState(() {
+        _orders = orderData;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching orders: $e');
+      setState(() {
+        _isLoading = false;
+      });
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load orders: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  List<Map<String, dynamic>> get _filteredOrders {
     if (_activeFilter == 'All') {
       return _orders;
     }
-    return _orders.where((order) => order.status == _activeFilter).toList();
+    return _orders.where((order) => order['status'] == _activeFilter).toList();
   }
 
   @override
@@ -147,8 +106,21 @@ class _OrdersPageState extends State<OrdersPage> {
             margin: const EdgeInsets.all(8),
             decoration: BrutalDecoration.brutalBox(),
             child: IconButton(
+              icon: const Icon(Icons.refresh, color: Colors.black),
+              onPressed: _fetchOrders,
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BrutalDecoration.brutalBox(),
+            child: IconButton(
               icon: const Icon(Icons.calendar_month, color: Colors.black),
               onPressed: () {
+                Twl.navigateToScreenAnimated(
+                    OrderCalendarView(
+                      orders: _filteredOrders,
+                    ),
+                    context: context);
                 // Navigate to calendar view
               },
             ),
@@ -167,36 +139,55 @@ class _OrdersPageState extends State<OrdersPage> {
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: _filteredOrders.isEmpty
-                ? _buildEmptyState()
-                : _buildOrdersList(),
+            child: _isLoading
+                ? _buildLoadingState()
+                : _filteredOrders.isEmpty
+                    ? _buildEmptyState()
+                    : _buildOrdersList(),
           ),
         ],
       ),
     );
   }
 
+  Widget _buildLoadingState() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: 16),
+          Text("Loading your orders..."),
+        ],
+      ),
+    );
+  }
+
   Widget _buildOrdersList() {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: _filteredOrders.length,
-      itemBuilder: (context, index) {
-        final order = _filteredOrders[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: OrderCard(
-            order: order,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => OrderDetailsPage(order: order),
-                ),
-              );
-            },
-          ),
-        );
-      },
+    return RefreshIndicator(
+      onRefresh: _fetchOrders,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: _filteredOrders.length,
+        itemBuilder: (context, index) {
+          final orderData = _filteredOrders[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: OrderCard(
+              order: orderData,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrderDetailsPage(order: orderData),
+                  ),
+                ).then((_) =>
+                    _fetchOrders()); // Refresh after returning from details
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -247,6 +238,9 @@ class _OrdersPageState extends State<OrdersPage> {
               ),
               onPressed: () {
                 // Navigate to product page
+                Twl.navigateToScreenClearStack(const HomeScreen(
+                  initialIndex: 1, // Assuming 1 is the products tab
+                ));
               },
               child: const Text(
                 "Browse Products",

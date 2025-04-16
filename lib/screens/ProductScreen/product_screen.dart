@@ -458,7 +458,7 @@ class _HorizontalProductScreenState extends State<ProductScreen> {
           Expanded(
             flex: 3,
             child: Text(
-              'Ingredients',
+              'Fruit',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
